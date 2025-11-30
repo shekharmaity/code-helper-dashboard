@@ -1,29 +1,31 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Container, Box, TextField, Button, Typography, Paper } from "@mui/material";
-import { login } from "../api/auth";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Container, Box, TextField, Button, Typography, Paper } from '@mui/material';
+import { login } from '../../api/auth/auth';
 
 export default function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const token = await login(username, password);
-      localStorage.setItem("token", token);
-      navigate("/");
+      localStorage.setItem('token', token);
+      navigate('/');
     } catch (err) {
-      setError("Invalid credentials");
+      setError('Invalid credentials');
     }
   };
 
   return (
     <Container maxWidth="xs">
       <Paper elevation={3} sx={{ p: 4, mt: 10 }}>
-        <Typography variant="h5" mb={2} align="center">Login</Typography>
+        <Typography variant="h5" mb={2} align="center">
+          Login
+        </Typography>
         <Box component="form" onSubmit={handleSubmit}>
           <TextField
             fullWidth
@@ -41,14 +43,11 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
           {error && (
-            <Typography color="error" variant="body2">{error}</Typography>
+            <Typography color="error" variant="body2">
+              {error}
+            </Typography>
           )}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3 }}
-          >
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
             Login
           </Button>
         </Box>

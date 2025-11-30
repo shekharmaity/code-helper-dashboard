@@ -1,6 +1,6 @@
-import axios from "./axiosInstance";
+import axios from './auth/axiosInstance';
 
-const API_BASE = "http://localhost:8080/admin/mocks";
+const API_BASE = 'http://localhost:8080/admin/mocks';
 
 export const getAllMocks = async () => {
   const res = await axios.get(API_BASE);

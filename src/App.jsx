@@ -1,29 +1,19 @@
-// App.jsx
-import { Routes, Route } from "react-router-dom";
-import DashboardLayout from "./components/DashboardLayout";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Login from "./pages/Login";
-import MocksList from "./pages/MockList";
-import CreateMock from "./pages/CreateMock";
-import EditMock from "./pages/EditMock";
+import { Route, Routes } from 'react-router-dom';
+import Layout from './layout/Layout';
+import CreateMock from './pages/CreateMock';
+import EditMock from './pages/EditMock';
+import MockList from './pages/MockList';
 
-export default function App() {
+function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route index element={<MocksList />} />
-        <Route path="create" element={<CreateMock />} />
-        <Route path="edit/:id" element={<EditMock />} />
-      </Route>
-    </Routes>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<MockList />} />
+        <Route path="/create" element={<CreateMock />} />
+        <Route path="/edit/:id" element={<EditMock />} />
+      </Routes>
+    </Layout>
   );
 }
+
+export default App;
