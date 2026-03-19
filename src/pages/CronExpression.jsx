@@ -387,11 +387,11 @@ const styles = {
   },
   stats: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
     gap: '12px',
-    minWidth: '320px',
+    width: '100%',
     alignSelf: 'flex-end',
-    flex: '1 1 320px',
+    flex: '1 1 280px',
   },
   statCard: {
     display: 'flex',
@@ -428,14 +428,14 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(420px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
     gap: '18px',
     alignItems: 'stretch',
   },
   panel: {
     display: 'flex',
     flexDirection: 'column',
-    minHeight: 'calc(100vh - 340px)',
+    minHeight: '380px',
     padding: '20px',
     borderRadius: '22px',
     background: '#ffffff',
@@ -445,7 +445,7 @@ const styles = {
   outputPanel: {
     display: 'flex',
     flexDirection: 'column',
-    minHeight: 'calc(100vh - 340px)',
+    minHeight: '380px',
     padding: '20px',
     borderRadius: '22px',
     background: 'linear-gradient(180deg, #111827 0%, #0f172a 100%)',

@@ -446,9 +446,10 @@ const stylesBase = {
 
 const styles = {
   page: {
+    width: '100%',
     maxWidth: '1180px',
     margin: '0 auto',
-    padding: '20px 0 28px',
+    padding: '12px 0 24px',
   },
   hero: {
     display: 'flex',
@@ -492,11 +493,11 @@ const styles = {
   },
   stats: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 140px), 1fr))',
     gap: '12px',
-    minWidth: '320px',
+    width: '100%',
     alignSelf: 'flex-end',
-    flex: '1 1 320px',
+    flex: '1 1 280px',
   },
   statCard: {
     display: 'flex',
@@ -536,7 +537,7 @@ const styles = {
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
     gap: '18px',
     marginBottom: '18px',
   },
@@ -637,7 +638,7 @@ const styles = {
   },
   diffHeader: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
     borderBottom: '1px solid rgba(51, 65, 85, 0.42)',
     background: 'rgba(15, 23, 42, 0.82)',
   },
@@ -654,7 +655,7 @@ const styles = {
   },
   diffBody: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
     minHeight: 0,
     flex: 1,
   },
