@@ -9,7 +9,7 @@ export default function Layout() {
         display: 'flex',
         height: '100vh',
         overflow: 'hidden',
-        bgcolor: '#e2e8f0',
+        bgcolor: 'transparent',
       }}
     >
       <Sidebar />
@@ -18,15 +18,22 @@ export default function Layout() {
         sx={{
           flexGrow: 1,
           overflow: 'auto',
-          px: { xs: 1.5, md: 2.5 },
-          py: { xs: 1.5, md: 2 },
-          bgcolor: '#eef2f7',
+          px: { xs: 1.5, md: 3 },
+          py: { xs: 1.5, md: 2.5 },
+          bgcolor: 'transparent',
           background:
-            'radial-gradient(circle at top right, rgba(148, 163, 184, 0.18), transparent 26%), linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%)',
+            'radial-gradient(circle at top right, rgba(37, 99, 235, 0.10), transparent 22%), radial-gradient(circle at 20% 20%, rgba(20, 184, 166, 0.08), transparent 24%)',
           transition: 'margin 0.3s ease',
         }}
       >
-        <Outlet />
+        <Box
+          sx={{
+            minHeight: '100%',
+            borderRadius: { xs: 0, md: 4 },
+          }}
+        >
+          <Outlet />
+        </Box>
       </Box>
     </Box>
   );

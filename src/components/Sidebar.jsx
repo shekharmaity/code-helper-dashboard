@@ -88,8 +88,10 @@ export default function Sidebar() {
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        borderRight: '1px solid rgba(71, 85, 105, 0.18)',
-        background: '#0f172a',
+        borderRight: '1px solid rgba(148, 163, 184, 0.12)',
+        background:
+          'linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(15, 23, 42, 0.92) 45%, rgba(17, 94, 89, 0.94) 100%)',
+        boxShadow: 'inset -1px 0 0 rgba(255, 255, 255, 0.04)',
       }}
     >
       <Box
@@ -117,9 +119,10 @@ export default function Sidebar() {
               borderRadius: 2.5,
               display: 'grid',
               placeItems: 'center',
-              bgcolor: 'rgba(59, 130, 246, 0.12)',
-              color: '#93c5fd',
+              bgcolor: 'rgba(255, 255, 255, 0.08)',
+              color: '#99f6e4',
               flexShrink: 0,
+              boxShadow: '0 10px 24px rgba(15, 23, 42, 0.22)',
             }}
           >
             <AutoAwesomeMotionIcon fontSize="small" />
@@ -143,7 +146,10 @@ export default function Sidebar() {
           <IconButton
             size="small"
             onClick={() => setCollapsed(true)}
-            sx={{ color: '#94a3b8', '&:hover': { color: '#e2e8f0', bgcolor: 'transparent' } }}
+            sx={{
+              color: '#94a3b8',
+              '&:hover': { color: '#e2e8f0', bgcolor: 'rgba(255, 255, 255, 0.06)' },
+            }}
           >
             <ChevronLeftIcon fontSize="small" />
           </IconButton>
@@ -158,7 +164,7 @@ export default function Sidebar() {
               top: 18,
               right: 10,
               color: '#94a3b8',
-              '&:hover': { color: '#e2e8f0', bgcolor: 'transparent' },
+              '&:hover': { color: '#e2e8f0', bgcolor: 'rgba(255, 255, 255, 0.06)' },
             }}
           >
             <ChevronRightIcon fontSize="small" />
@@ -181,9 +187,11 @@ export default function Sidebar() {
                   borderRadius: 2.5,
                   justifyContent: collapsed ? 'center' : 'flex-start',
                   color: isActive ? '#f8fafc' : '#94a3b8',
-                  bgcolor: isActive ? 'rgba(59, 130, 246, 0.14)' : 'transparent',
+                  bgcolor: isActive ? 'rgba(255, 255, 255, 0.10)' : 'transparent',
+                  border: isActive ? '1px solid rgba(153, 246, 228, 0.18)' : '1px solid transparent',
+                  boxShadow: isActive ? '0 14px 28px rgba(2, 6, 23, 0.18)' : 'none',
                   '&:hover': {
-                    bgcolor: isActive ? 'rgba(59, 130, 246, 0.18)' : 'rgba(148, 163, 184, 0.08)',
+                    bgcolor: isActive ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.06)',
                   },
                 }}
               >
@@ -192,7 +200,7 @@ export default function Sidebar() {
                     minWidth: 0,
                     mr: collapsed ? 0 : 1.25,
                     justifyContent: 'center',
-                    color: isActive ? '#60a5fa' : '#94a3b8',
+                    color: isActive ? '#99f6e4' : '#94a3b8',
                   }}
                 >
                   {item.icon}

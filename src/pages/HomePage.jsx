@@ -169,8 +169,9 @@ const styles = {
     borderRadius: 6,
     color: '#f8fafc',
     background:
-      'radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 28%), linear-gradient(135deg, #0f172a 0%, #1e293b 46%, #1d4ed8 100%)',
-    boxShadow: '0 30px 80px rgba(15, 23, 42, 0.18)',
+      'radial-gradient(circle at top left, rgba(45, 212, 191, 0.24), transparent 26%), radial-gradient(circle at 85% 20%, rgba(96, 165, 250, 0.18), transparent 24%), linear-gradient(135deg, #0f172a 0%, #132238 48%, #115e59 100%)',
+    boxShadow: '0 30px 80px rgba(15, 23, 42, 0.14)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
   },
   heroCopy: {
     maxWidth: '760px',
@@ -209,10 +210,12 @@ const styles = {
     py: 1.2,
     textTransform: 'none',
     fontWeight: 700,
-    background: '#f8fafc',
+    background: 'linear-gradient(135deg, #f8fafc 0%, #dbeafe 100%)',
     color: '#0f172a',
+    boxShadow: '0 16px 30px rgba(15, 23, 42, 0.18)',
     '&:hover': {
-      background: '#e2e8f0',
+      background: 'linear-gradient(135deg, #ffffff 0%, #bfdbfe 100%)',
+      boxShadow: '0 18px 34px rgba(15, 23, 42, 0.22)',
     },
   },
   secondaryButton: {
@@ -221,11 +224,11 @@ const styles = {
     py: 1.2,
     textTransform: 'none',
     fontWeight: 700,
-    borderColor: 'rgba(191, 219, 254, 0.4)',
+    borderColor: 'rgba(191, 219, 254, 0.34)',
     color: '#e0f2fe',
     '&:hover': {
-      borderColor: '#93c5fd',
-      background: 'rgba(148, 163, 184, 0.08)',
+      borderColor: '#99f6e4',
+      background: 'rgba(255, 255, 255, 0.06)',
     },
   },
   heroStats: {
@@ -241,8 +244,8 @@ const styles = {
     gap: 1,
     p: 3,
     borderRadius: 5,
-    background: 'rgba(15, 23, 42, 0.28)',
-    border: '1px solid rgba(148, 163, 184, 0.14)',
+    background: 'rgba(15, 23, 42, 0.26)',
+    border: '1px solid rgba(255, 255, 255, 0.10)',
     backdropFilter: 'blur(12px)',
   },
   statValue: {
@@ -279,9 +282,16 @@ const styles = {
     minHeight: 220,
     p: 3,
     borderRadius: 5,
-    background: 'rgba(255, 255, 255, 0.88)',
-    border: '1px solid rgba(148, 163, 184, 0.14)',
-    boxShadow: '0 18px 42px rgba(15, 23, 42, 0.06)',
+    background:
+      'linear-gradient(180deg, rgba(255, 255, 255, 0.90) 0%, rgba(248, 250, 252, 0.84) 100%)',
+    border: '1px solid rgba(148, 163, 184, 0.16)',
+    boxShadow: '0 18px 42px rgba(15, 23, 42, 0.05)',
+    transition: 'transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease',
+    '&:hover': {
+      transform: 'translateY(-4px)',
+      boxShadow: '0 26px 48px rgba(15, 23, 42, 0.10)',
+      borderColor: 'rgba(20, 184, 166, 0.24)',
+    },
   },
   cardIcon: {
     width: 46,
