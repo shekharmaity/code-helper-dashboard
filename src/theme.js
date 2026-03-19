@@ -18,13 +18,13 @@ const theme = createTheme({
       paper: 'rgba(43, 49, 59, 0.84)',
     },
     text: {
-      primary: '#e6edf3',
-      secondary: '#9da7b3',
+      primary: '#0f172a',
+      secondary: '#475569',
     },
     divider: 'rgba(255, 255, 255, 0.08)',
   },
   shape: {
-    borderRadius: 14,
+    borderRadius: 12,
   },
   typography: {
     fontFamily:
@@ -32,14 +32,23 @@ const theme = createTheme({
     h2: {
       fontWeight: 700,
       letterSpacing: '-0.04em',
+      fontSize: '2.8rem',
     },
     h5: {
       fontWeight: 700,
       letterSpacing: '-0.03em',
+      fontSize: '1.35rem',
+    },
+    body1: {
+      fontSize: '0.95rem',
+    },
+    body2: {
+      fontSize: '0.86rem',
     },
     button: {
       fontWeight: 600,
       textTransform: 'none',
+      fontSize: '0.86rem',
     },
   },
   components: {
@@ -91,11 +100,75 @@ const theme = createTheme({
         },
       },
     },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          color: '#0f172a',
+        },
+        input: {
+          color: '#0f172a',
+          '::placeholder': {
+            color: '#64748b',
+            opacity: 1,
+          },
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'rgba(248, 250, 252, 0.96)',
+          color: '#0f172a',
+          borderRadius: 12,
+          '& fieldset': {
+            borderColor: 'rgba(148, 163, 184, 0.24)',
+          },
+          '&:hover fieldset': {
+            borderColor: 'rgba(83, 146, 247, 0.36)',
+          },
+          '&.Mui-focused fieldset': {
+            borderColor: '#3574f0',
+            borderWidth: 1,
+          },
+          '&.Mui-disabled': {
+            backgroundColor: 'rgba(241, 245, 249, 0.92)',
+          },
+        },
+        input: {
+          color: '#0f172a',
+        },
+      },
+    },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: '#475569',
+          '&.Mui-focused': {
+            color: '#3574f0',
+          },
+        },
+      },
+    },
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          color: '#64748b',
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 10,
+          borderRadius: 9,
           boxShadow: 'none',
+          minHeight: 38,
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          fontWeight: 700,
         },
       },
     },

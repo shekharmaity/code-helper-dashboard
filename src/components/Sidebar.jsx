@@ -6,6 +6,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  ListSubheader,
   Tooltip,
   Typography,
   useMediaQuery,
@@ -14,29 +15,71 @@ import {
 import { Link, useLocation } from 'react-router-dom';
 
 import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
+import ColorLensIcon from '@mui/icons-material/ColorLens';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CodeIcon from '@mui/icons-material/Code';
 import DataObjectIcon from '@mui/icons-material/DataObject';
+import DifferenceIcon from '@mui/icons-material/Difference';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
+import KeyIcon from '@mui/icons-material/Key';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import LinkIcon from '@mui/icons-material/Link';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PasswordIcon from '@mui/icons-material/Password';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import TagIcon from '@mui/icons-material/Tag';
+import TimerIcon from '@mui/icons-material/Timer';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import { useState } from 'react';
 
-const navigationItems = [
-  { label: 'Home', path: '/', icon: <HomeRoundedIcon /> },
-  { label: 'All Mocks', path: '/mocks', icon: <ListAltIcon /> },
-  { label: 'JSON Formatter', path: '/json-formatter', icon: <DataObjectIcon /> },
-  { label: 'Cron Expression', path: '/cron-expression', icon: <ScheduleIcon /> },
-  { label: 'Regex Check', path: '/regex-check', icon: <ManageSearchIcon /> },
-  { label: 'File Difference', path: '/file-difference', icon: <FindInPageIcon /> },
-  { label: 'XML Formatter', path: '/xml-formatter', icon: <CodeIcon /> },
-  { label: 'UUID Generator', path: '/uuid-generator', icon: <FingerprintIcon /> },
-  { label: 'Tiny URL', path: '/tiny-url', icon: <LinkIcon /> },
+const navigationSections = [
+  {
+    title: 'Workspace',
+    items: [
+      { label: 'Home', path: '/', icon: <HomeRoundedIcon /> },
+    ],
+  },
+  {
+    title: 'Inspect',
+    items: [
+      { label: 'JSON Formatter', path: '/json-formatter', icon: <DataObjectIcon /> },
+      { label: 'OpenAPI Workbench', path: '/openapi-workbench', icon: <DescriptionIcon /> },
+      { label: 'YAML Formatter', path: '/yaml-formatter', icon: <ViewModuleIcon /> },
+      { label: 'XML Formatter', path: '/xml-formatter', icon: <CodeIcon /> },
+      { label: 'Kubernetes Manifest', path: '/kubernetes-manifest', icon: <IntegrationInstructionsIcon /> },
+      { label: 'Regex Check', path: '/regex-check', icon: <ManageSearchIcon /> },
+      { label: 'Cron Expression', path: '/cron-expression', icon: <ScheduleIcon /> },
+      { label: 'File Difference', path: '/file-difference', icon: <FindInPageIcon /> },
+      { label: 'JSON Diff', path: '/json-diff', icon: <DifferenceIcon /> },
+      { label: 'HTTP Status Lookup', path: '/http-status-lookup', icon: <ListAltIcon /> },
+    ],
+  },
+  {
+    title: 'Encode',
+    items: [
+      { label: 'Base64 Tool', path: '/base64-tool', icon: <PasswordIcon /> },
+      { label: 'URL Encoder', path: '/url-encoder', icon: <LinkIcon /> },
+      { label: 'JWT Decoder', path: '/jwt-decoder', icon: <KeyIcon /> },
+      { label: 'Hash Generator', path: '/hash-generator', icon: <TagIcon /> },
+    ],
+  },
+  {
+    title: 'Convert',
+    items: [
+      { label: 'Timestamp Converter', path: '/timestamp-converter', icon: <TimerIcon /> },
+      { label: 'Text Case Converter', path: '/text-case-converter', icon: <SwapHorizIcon /> },
+      { label: 'Color Converter', path: '/color-converter', icon: <ColorLensIcon /> },
+      { label: 'Query Param Builder', path: '/query-param-builder', icon: <QueryStatsIcon /> },
+      { label: 'UUID Generator', path: '/uuid-generator', icon: <FingerprintIcon /> },
+    ],
+  },
 ];
 
 export default function Sidebar({
@@ -52,12 +95,12 @@ export default function Sidebar({
   const content = (
     <Box
       sx={{
-        width: isMobile ? 272 : compact ? 78 : 232,
+        width: isMobile ? 252 : compact ? 72 : 212,
         transition: 'width 0.22s ease',
         height: '100%',
         color: '#c7d2da',
-        px: 1.25,
-        py: 1.5,
+        px: 1,
+        py: 1.1,
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
@@ -74,7 +117,7 @@ export default function Sidebar({
           display: 'flex',
           alignItems: 'center',
           justifyContent: compact ? 'center' : 'space-between',
-          mb: 1.5,
+          mb: 1,
         }}
       >
         <Box
@@ -87,9 +130,9 @@ export default function Sidebar({
         >
           <Box
             sx={{
-              width: 36,
-              height: 36,
-              borderRadius: 2.5,
+              width: 32,
+              height: 32,
+              borderRadius: 2,
               display: 'grid',
               placeItems: 'center',
               bgcolor: 'rgba(83, 146, 247, 0.14)',
@@ -104,13 +147,13 @@ export default function Sidebar({
           {!compact && (
             <Typography
               sx={{
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 700,
                 color: '#e6edf3',
                 whiteSpace: 'nowrap',
               }}
             >
-              Mock Dashboard
+              Developer Toolkit
             </Typography>
           )}
         </Box>
@@ -134,8 +177,8 @@ export default function Sidebar({
             onClick={() => setCollapsed(false)}
             sx={{
               position: 'absolute',
-              top: 18,
-              right: 10,
+              top: 14,
+              right: 8,
               color: '#7d8590',
               '&:hover': { color: '#e6edf3', bgcolor: 'rgba(255, 255, 255, 0.05)' },
             }}
@@ -158,55 +201,78 @@ export default function Sidebar({
         )}
       </Box>
 
-      <List sx={{ p: 0, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-        {navigationItems.map((item) => {
-          const isActive = location.pathname === item.path;
-
-          return (
-            <Tooltip title={compact ? item.label : ''} placement="right" key={item.path}>
-              <ListItemButton
-                component={Link}
-                to={item.path}
-                onClick={isMobile ? onMobileClose : undefined}
+      <List sx={{ p: 0, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+        {navigationSections.map((section) => (
+          <Box key={section.title}>
+            {!compact && (
+              <ListSubheader
+                disableGutters
                 sx={{
-                  minHeight: 46,
-                  px: compact ? 1 : 1.25,
-                  borderRadius: 2.5,
-                  justifyContent: compact ? 'center' : 'flex-start',
-                  color: isActive ? '#e6edf3' : '#7d8590',
-                  bgcolor: isActive ? 'rgba(83, 146, 247, 0.12)' : 'transparent',
-                  border: isActive ? '1px solid rgba(83, 146, 247, 0.22)' : '1px solid transparent',
-                  boxShadow: isActive ? 'inset 2px 0 0 #3574f0' : 'none',
-                  '&:hover': {
-                    bgcolor: isActive ? 'rgba(83, 146, 247, 0.16)' : 'rgba(255, 255, 255, 0.04)',
-                  },
+                  px: 1,
+                  py: 0.5,
+                  bgcolor: 'transparent',
+                  color: '#7d8590',
+                  fontSize: 10,
+                  fontWeight: 700,
+                  lineHeight: 1.4,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: compact ? 0 : 1.25,
-                    justifyContent: 'center',
-                    color: isActive ? '#8ab4f8' : '#7d8590',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
+                {section.title}
+              </ListSubheader>
+            )}
 
-                {!compact && (
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      fontSize: 14,
-                      fontWeight: isActive ? 600 : 500,
-                      color: isActive ? '#e6edf3' : '#adbac7',
+            {section.items.map((item) => {
+              const isActive = location.pathname === item.path;
+
+              return (
+                <Tooltip title={compact ? item.label : ''} placement="right" key={item.path}>
+                  <ListItemButton
+                    component={Link}
+                    to={item.path}
+                    onClick={isMobile ? onMobileClose : undefined}
+                    sx={{
+                      minHeight: 40,
+                      px: compact ? 0.9 : 1,
+                      borderRadius: 2,
+                      justifyContent: compact ? 'center' : 'flex-start',
+                      color: isActive ? '#e6edf3' : '#7d8590',
+                      bgcolor: isActive ? 'rgba(83, 146, 247, 0.12)' : 'transparent',
+                      border: isActive ? '1px solid rgba(83, 146, 247, 0.22)' : '1px solid transparent',
+                      boxShadow: isActive ? 'inset 2px 0 0 #3574f0' : 'none',
+                      '&:hover': {
+                        bgcolor: isActive ? 'rgba(83, 146, 247, 0.16)' : 'rgba(255, 255, 255, 0.04)',
+                      },
                     }}
-                  />
-                )}
-              </ListItemButton>
-            </Tooltip>
-          );
-        })}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: compact ? 0 : 1.25,
+                        justifyContent: 'center',
+                        color: isActive ? '#8ab4f8' : '#7d8590',
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+
+                    {!compact && (
+                      <ListItemText
+                        primary={item.label}
+                        primaryTypographyProps={{
+                          fontSize: 13,
+                          fontWeight: isActive ? 600 : 500,
+                          color: isActive ? '#e6edf3' : '#adbac7',
+                        }}
+                      />
+                    )}
+                  </ListItemButton>
+                </Tooltip>
+              );
+            })}
+          </Box>
+        ))}
       </List>
     </Box>
   );

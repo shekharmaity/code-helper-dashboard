@@ -72,7 +72,7 @@ export default function Layout() {
                 letterSpacing: '-0.02em',
               }}
             >
-              Mock Dashboard
+              Developer Toolkit
             </Typography>
           </Box>
         )}

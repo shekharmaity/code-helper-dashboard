@@ -13,76 +13,181 @@ import FingerprintIcon from '@mui/icons-material/Fingerprint';
 import HubIcon from '@mui/icons-material/Hub';
 import LinkIcon from '@mui/icons-material/Link';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PasswordIcon from '@mui/icons-material/Password';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import StorageIcon from '@mui/icons-material/Storage';
 import CodeIcon from '@mui/icons-material/Code';
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import TimerIcon from '@mui/icons-material/Timer';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import ColorLensIcon from '@mui/icons-material/ColorLens';
+import KeyIcon from '@mui/icons-material/Key';
+import TagIcon from '@mui/icons-material/Tag';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import { Link } from 'react-router-dom';
 
 const CLICK_COUNT_STORAGE_KEY = 'home-page-click-counts';
 
-const utilityCards = [
+const utilitySections = [
   {
-    title: 'Mock Manager',
-    description: 'Create, edit, and manage mock endpoints in one place.',
-    path: '/mocks',
-    icon: <StorageIcon fontSize="small" />,
-    accent: 'linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%)',
+    title: 'Inspect',
+    items: [
+      {
+        title: 'JSON Formatter',
+        description: 'Format, minify, and inspect nested JSON payloads.',
+        path: '/json-formatter',
+        icon: <DataObjectIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #1d4ed8 0%, #38bdf8 100%)',
+      },
+      {
+        title: 'OpenAPI Workbench',
+        description: 'Validate specs, preview routes, get suggestions, and compare revisions.',
+        path: '/openapi-workbench',
+        icon: <DescriptionIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%)',
+      },
+      {
+        title: 'XML Formatter',
+        description: 'Clean up XML responses and inspect nested nodes.',
+        path: '/xml-formatter',
+        icon: <CodeIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #115e59 0%, #14b8a6 100%)',
+      },
+      {
+        title: 'YAML Formatter',
+        description: 'Format YAML documents and convert them into readable JSON.',
+        path: '/yaml-formatter',
+        icon: <ViewModuleIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #1e40af 0%, #06b6d4 100%)',
+      },
+      {
+        title: 'Kubernetes Manifest',
+        description: 'Inspect Kubernetes YAML resources and generate quick kubectl hints.',
+        path: '/kubernetes-manifest',
+        icon: <IntegrationInstructionsIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #2563eb 0%, #0f766e 100%)',
+      },
+      {
+        title: 'Regex Check',
+        description: 'Test patterns, flags, and live matches against sample text.',
+        path: '/regex-check',
+        icon: <ManageSearchIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #047857 0%, #10b981 100%)',
+      },
+      {
+        title: 'Cron Expression',
+        description: 'Validate cron syntax and preview upcoming schedule runs.',
+        path: '/cron-expression',
+        icon: <ScheduleIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #6d28d9 0%, #a855f7 100%)',
+      },
+      {
+        title: 'File Difference',
+        description: 'Compare text or files side by side and review changes.',
+        path: '/file-difference',
+        icon: <DifferenceIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #92400e 0%, #f59e0b 100%)',
+      },
+      {
+        title: 'JSON Diff',
+        description: 'Compare parsed JSON structures by path, not just by line.',
+        path: '/json-diff',
+        icon: <DifferenceIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #2563eb 0%, #60a5fa 100%)',
+      },
+      {
+        title: 'HTTP Status Lookup',
+        description: 'Find common HTTP status meanings fast during API work.',
+        path: '/http-status-lookup',
+        icon: <ListAltIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #0f766e 0%, #2dd4bf 100%)',
+      },
+    ],
   },
   {
-    title: 'JSON Formatter',
-    description: 'Format, minify, and inspect nested JSON payloads.',
-    path: '/json-formatter',
-    icon: <DataObjectIcon fontSize="small" />,
-    accent: 'linear-gradient(135deg, #1d4ed8 0%, #38bdf8 100%)',
+    title: 'Encode',
+    items: [
+      {
+        title: 'Base64 Tool',
+        description: 'Encode and decode Base64 text without leaving the dashboard.',
+        path: '/base64-tool',
+        icon: <PasswordIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%)',
+      },
+      {
+        title: 'URL Encoder',
+        description: 'Escape or restore URLs, query strings, and fragments.',
+        path: '/url-encoder',
+        icon: <LinkIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #0f766e 0%, #22c55e 100%)',
+      },
+      {
+        title: 'JWT Decoder',
+        description: 'Inspect JWT headers and claims locally.',
+        path: '/jwt-decoder',
+        icon: <KeyIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #b45309 0%, #f59e0b 100%)',
+      },
+      {
+        title: 'Hash Generator',
+        description: 'Generate SHA hashes for quick integrity checks.',
+        path: '/hash-generator',
+        icon: <TagIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #475569 0%, #94a3b8 100%)',
+      },
+    ],
   },
   {
-    title: 'Cron Expression',
-    description: 'Validate cron syntax and preview upcoming schedule runs.',
-    path: '/cron-expression',
-    icon: <ScheduleIcon fontSize="small" />,
-    accent: 'linear-gradient(135deg, #6d28d9 0%, #a855f7 100%)',
-  },
-  {
-    title: 'Regex Check',
-    description: 'Test patterns, flags, and live matches against sample text.',
-    path: '/regex-check',
-    icon: <ManageSearchIcon fontSize="small" />,
-    accent: 'linear-gradient(135deg, #047857 0%, #10b981 100%)',
-  },
-  {
-    title: 'XML Formatter',
-    description: 'Clean up XML responses and inspect nested nodes.',
-    path: '/xml-formatter',
-    icon: <CodeIcon fontSize="small" />,
-    accent: 'linear-gradient(135deg, #115e59 0%, #14b8a6 100%)',
-  },
-  {
-    title: 'File Difference',
-    description: 'Compare text or files side by side and review changes.',
-    path: '/file-difference',
-    icon: <DifferenceIcon fontSize="small" />,
-    accent: 'linear-gradient(135deg, #92400e 0%, #f59e0b 100%)',
-  },
-  {
-    title: 'UUID Generator',
-    description: 'Generate quick UUIDs for mocks, fixtures, and tests.',
-    path: '/uuid-generator',
-    icon: <FingerprintIcon fontSize="small" />,
-    accent: 'linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%)',
-  },
-  {
-    title: 'Tiny URL',
-    description: 'Create clean short links for demos and sharing.',
-    path: '/tiny-url',
-    icon: <LinkIcon fontSize="small" />,
-    accent: 'linear-gradient(135deg, #b91c1c 0%, #fb923c 100%)',
+    title: 'Convert',
+    items: [
+      {
+        title: 'Timestamp Converter',
+        description: 'Convert Unix timestamps into readable local and UTC dates.',
+        path: '/timestamp-converter',
+        icon: <TimerIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #1d4ed8 0%, #818cf8 100%)',
+      },
+      {
+        title: 'Text Case Converter',
+        description: 'Switch between title, camel, snake, kebab, and more.',
+        path: '/text-case-converter',
+        icon: <SwapHorizIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #0f766e 0%, #14b8a6 100%)',
+      },
+      {
+        title: 'Color Converter',
+        description: 'Convert HEX, RGB, and HSL with a live preview.',
+        path: '/color-converter',
+        icon: <ColorLensIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #db2777 0%, #fb7185 100%)',
+      },
+      {
+        title: 'Query Param Builder',
+        description: 'Build encoded query strings and full request URLs.',
+        path: '/query-param-builder',
+        icon: <QueryStatsIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #2563eb 0%, #22d3ee 100%)',
+      },
+      {
+        title: 'UUID Generator',
+        description: 'Generate quick UUIDs for mocks, fixtures, and tests.',
+        path: '/uuid-generator',
+        icon: <FingerprintIcon fontSize="small" />,
+        accent: 'linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%)',
+      },
+    ],
   },
 ];
 
 export default function HomePage() {
   const [clickCounts, setClickCounts] = useState({});
 
-  const mostUsedTool = utilityCards.reduce(
+  const allUtilityCards = utilitySections.flatMap((section) => section.items);
+
+  const mostUsedTool = allUtilityCards.reduce(
     (best, card) => {
       const count = clickCounts[card.path] ?? 0;
 
@@ -127,11 +232,12 @@ export default function HomePage() {
             Workspace
           </Box>
           <Typography variant="h2" sx={styles.title}>
-            Mock Dashboard
+            Developer Utility Workbench
           </Typography>
           <Typography sx={styles.description}>
-            A unified internal workspace for mocks, payload tooling, quick generators, and diff
-            workflows. Everything is reachable from one compact utility hub.
+            A compact workspace for payload inspection, encoding helpers, diff workflows, quick
+            generators, and debugging utilities. Everything stays organized around common developer
+            tasks instead of generic dashboard tiles.
           </Typography>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mt: 3 }}>
@@ -157,7 +263,7 @@ export default function HomePage() {
         <Box sx={styles.heroStats}>
           <Box sx={styles.statCard}>
             <HubIcon sx={{ color: '#93c5fd', fontSize: 20 }} />
-            <Typography sx={styles.statValue}>8</Typography>
+            <Typography sx={styles.statValue}>{allUtilityCards.length}</Typography>
             <Typography sx={styles.statLabel}>Utility Pages</Typography>
           </Box>
           <Box sx={styles.statCard}>
@@ -176,37 +282,43 @@ export default function HomePage() {
         </Box>
       </Paper>
 
-      <Box sx={styles.sectionHeader}>
-        <Typography variant="h5" sx={styles.sectionTitle}>
-          Quick Access
-        </Typography>
-        <Typography sx={styles.sectionSubtitle}>
-          Jump straight into the tool you need without digging through menus.
-        </Typography>
-      </Box>
+      {utilitySections.map((section) => (
+        <Box key={section.title}>
+          <Box sx={styles.sectionHeader}>
+            <Typography variant="h5" sx={styles.sectionTitle}>
+              {section.title}
+            </Typography>
+            <Typography sx={styles.sectionSubtitle}>
+              {section.title === 'Inspect' && 'Format, compare, and validate payloads quickly.'}
+              {section.title === 'Encode' && 'Handle common transport and auth encodings in one place.'}
+              {section.title === 'Convert' && 'Switch between formats, identifiers, and helper builders fast.'}
+            </Typography>
+          </Box>
 
-      <Box sx={styles.cardGrid}>
-        {utilityCards.map((card) => (
-          <Paper key={card.path} elevation={0} sx={styles.card}>
-            <Box sx={{ ...styles.cardIcon, background: card.accent }}>{card.icon}</Box>
-            <Box sx={styles.cardTitleRow}>
-              <Typography sx={styles.cardTitle}>{card.title}</Typography>
-              <Typography sx={styles.cardCount}>
-                {clickCounts[card.path] ?? 0} clicks
-              </Typography>
-            </Box>
-            <Typography sx={styles.cardDescription}>{card.description}</Typography>
-            <Button
-              component={Link}
-              to={card.path}
-              sx={styles.cardButton}
-              onClick={() => handleCardClick(card.path)}
-            >
-              Open
-            </Button>
-          </Paper>
-        ))}
-      </Box>
+          <Box sx={styles.cardGrid}>
+            {section.items.map((card) => (
+              <Paper key={card.path} elevation={0} sx={styles.card}>
+                <Box sx={{ ...styles.cardIcon, background: card.accent }}>{card.icon}</Box>
+                <Box sx={styles.cardTitleRow}>
+                  <Typography sx={styles.cardTitle}>{card.title}</Typography>
+                  <Typography sx={styles.cardCount}>
+                    {clickCounts[card.path] ?? 0} clicks
+                  </Typography>
+                </Box>
+                <Typography sx={styles.cardDescription}>{card.description}</Typography>
+                <Button
+                  component={Link}
+                  to={card.path}
+                  sx={styles.cardButton}
+                  onClick={() => handleCardClick(card.path)}
+                >
+                  Open
+                </Button>
+              </Paper>
+            ))}
+          </Box>
+        </Box>
+      ))}
     </Box>
   );
 }
@@ -217,14 +329,14 @@ const styles = {
     minHeight: 'calc(100vh - 48px)',
     display: 'flex',
     flexDirection: 'column',
-    gap: 3,
-    py: 1,
+    gap: 2.25,
+    py: 0.5,
   },
   hero: {
     display: 'grid',
     gridTemplateColumns: { xs: '1fr', lg: '1.5fr 0.8fr' },
-    gap: 3,
-    padding: { xs: 3, md: 4 },
+    gap: 2.25,
+    padding: { xs: 2.25, md: 3 },
     borderRadius: 6,
     color: '#f8fafc',
     background:
@@ -239,34 +351,34 @@ const styles = {
     display: 'inline-flex',
     alignItems: 'center',
     gap: 1,
-    px: 1.5,
-    py: 0.75,
+    px: 1.25,
+    py: 0.5,
     borderRadius: 999,
     background: 'rgba(148, 163, 184, 0.14)',
     color: '#8ab4f8',
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 700,
     letterSpacing: '0.08em',
     textTransform: 'uppercase',
   },
   title: {
-    mt: 2,
-    fontSize: { xs: '2.5rem', md: '3.6rem' },
+    mt: 1.5,
+    fontSize: { xs: '2rem', md: '3rem' },
     lineHeight: 1.02,
     fontWeight: 800,
     letterSpacing: '-0.04em',
   },
   description: {
-    mt: 2,
+    mt: 1.5,
     maxWidth: '58ch',
     color: 'rgba(199, 210, 218, 0.9)',
-    fontSize: 16,
-    lineHeight: 1.8,
+    fontSize: 14,
+    lineHeight: 1.7,
   },
   primaryButton: {
     borderRadius: 999,
-    px: 2.5,
-    py: 1.2,
+    px: 2,
+    py: 0.95,
     textTransform: 'none',
     fontWeight: 700,
     background: 'linear-gradient(135deg, #3574f0 0%, #235dcb 100%)',
@@ -279,8 +391,8 @@ const styles = {
   },
   secondaryButton: {
     borderRadius: 999,
-    px: 2.5,
-    py: 1.2,
+    px: 2,
+    py: 0.95,
     textTransform: 'none',
     fontWeight: 700,
     borderColor: 'rgba(83, 146, 247, 0.34)',
@@ -292,8 +404,8 @@ const styles = {
   },
   heroStats: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    gap: 2,
+    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+    gap: 1.5,
     alignSelf: 'stretch',
   },
   statCard: {
@@ -301,26 +413,26 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
     gap: 1,
-    p: 3,
+    p: 2.25,
     borderRadius: 5,
     background: 'rgba(31, 35, 41, 0.72)',
     border: '1px solid rgba(255, 255, 255, 0.08)',
     backdropFilter: 'blur(12px)',
   },
   statValue: {
-    fontSize: '2.2rem',
+    fontSize: '1.8rem',
     fontWeight: 800,
     color: '#f8fafc',
   },
   statValueSmall: {
-    fontSize: '1rem',
+    fontSize: '0.92rem',
     fontWeight: 700,
     color: '#f8fafc',
     lineHeight: 1.4,
   },
   statLabel: {
     color: '#9da7b3',
-    fontSize: 13,
+    fontSize: 11,
     letterSpacing: '0.04em',
     textTransform: 'uppercase',
   },
@@ -332,21 +444,21 @@ const styles = {
     color: '#0f172a',
   },
   sectionSubtitle: {
-    mt: 0.75,
+    mt: 0.5,
     color: '#64748b',
-    fontSize: 15,
+    fontSize: 13,
   },
   cardGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: 2,
+    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+    gap: 1.5,
   },
   card: {
     display: 'flex',
     flexDirection: 'column',
-    minHeight: 220,
-    p: 3,
-    borderRadius: 5,
+    minHeight: 190,
+    p: 2.25,
+    borderRadius: 4,
     background:
       'linear-gradient(180deg, rgba(43, 49, 59, 0.92) 0%, rgba(34, 39, 46, 0.94) 100%)',
     border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -359,16 +471,16 @@ const styles = {
     },
   },
   cardIcon: {
-    width: 46,
-    height: 46,
-    borderRadius: 3,
+    width: 40,
+    height: 40,
+    borderRadius: 2.5,
     display: 'grid',
     placeItems: 'center',
     color: '#f8fafc',
-    mb: 2,
+    mb: 1.5,
   },
   cardTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 700,
     color: '#e6edf3',
   },
@@ -381,18 +493,18 @@ const styles = {
   cardCount: {
     flexShrink: 0,
     color: '#7d8590',
-    fontSize: 11,
+    fontSize: 10,
     letterSpacing: '0.03em',
     textTransform: 'uppercase',
   },
   cardDescription: {
-    mt: 1,
+    mt: 0.75,
     color: '#9da7b3',
-    lineHeight: 1.7,
+    lineHeight: 1.6,
     flexGrow: 1,
   },
   cardButton: {
-    mt: 2.5,
+    mt: 1.75,
     width: 'fit-content',
     px: 0,
     textTransform: 'none',
