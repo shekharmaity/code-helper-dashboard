@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -16,6 +17,8 @@ import StorageIcon from '@mui/icons-material/Storage';
 import CodeIcon from '@mui/icons-material/Code';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { Link } from 'react-router-dom';
+
+const CLICK_COUNT_STORAGE_KEY = 'home-page-click-counts';
 
 const utilityCards = [
   {
@@ -77,6 +80,44 @@ const utilityCards = [
 ];
 
 export default function HomePage() {
+  const [clickCounts, setClickCounts] = useState({});
+
+  const mostUsedTool = utilityCards.reduce(
+    (best, card) => {
+      const count = clickCounts[card.path] ?? 0;
+
+      if (count > best.count) {
+        return { title: card.title, count };
+      }
+
+      return best;
+    },
+    { title: 'None yet', count: 0 },
+  );
+
+  useEffect(() => {
+    try {
+      const savedCounts = window.localStorage.getItem(CLICK_COUNT_STORAGE_KEY);
+      setClickCounts(savedCounts ? JSON.parse(savedCounts) : {});
+    } catch {
+      setClickCounts({});
+    }
+  }, []);
+
+  const handleCardClick = (path) => {
+    setClickCounts((prev) => {
+      const next = { ...prev, [path]: (prev[path] ?? 0) + 1 };
+
+      try {
+        window.localStorage.setItem(CLICK_COUNT_STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // Ignore storage failures and keep the in-memory counter.
+      }
+
+      return next;
+    });
+  };
+
   return (
     <Box sx={styles.page}>
       <Paper elevation={0} sx={styles.hero}>
@@ -124,6 +165,14 @@ export default function HomePage() {
             <Typography sx={styles.statValue}>1</Typography>
             <Typography sx={styles.statLabel}>Mock Workspace</Typography>
           </Box>
+          <Box sx={styles.statCard}>
+            <DashboardCustomizeIcon sx={{ color: '#8ab4f8', fontSize: 20 }} />
+            <Typography sx={styles.statValueSmall}>{mostUsedTool.title}</Typography>
+            <Typography sx={styles.statLabel}>
+              Most Used Tool
+              {mostUsedTool.count ? ` · ${mostUsedTool.count} clicks` : ''}
+            </Typography>
+          </Box>
         </Box>
       </Paper>
 
@@ -140,9 +189,19 @@ export default function HomePage() {
         {utilityCards.map((card) => (
           <Paper key={card.path} elevation={0} sx={styles.card}>
             <Box sx={{ ...styles.cardIcon, background: card.accent }}>{card.icon}</Box>
-            <Typography sx={styles.cardTitle}>{card.title}</Typography>
+            <Box sx={styles.cardTitleRow}>
+              <Typography sx={styles.cardTitle}>{card.title}</Typography>
+              <Typography sx={styles.cardCount}>
+                {clickCounts[card.path] ?? 0} clicks
+              </Typography>
+            </Box>
             <Typography sx={styles.cardDescription}>{card.description}</Typography>
-            <Button component={Link} to={card.path} sx={styles.cardButton}>
+            <Button
+              component={Link}
+              to={card.path}
+              sx={styles.cardButton}
+              onClick={() => handleCardClick(card.path)}
+            >
               Open
             </Button>
           </Paper>
@@ -169,9 +228,9 @@ const styles = {
     borderRadius: 6,
     color: '#f8fafc',
     background:
-      'radial-gradient(circle at top left, rgba(45, 212, 191, 0.24), transparent 26%), radial-gradient(circle at 85% 20%, rgba(96, 165, 250, 0.18), transparent 24%), linear-gradient(135deg, #0f172a 0%, #132238 48%, #115e59 100%)',
-    boxShadow: '0 30px 80px rgba(15, 23, 42, 0.14)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+      'radial-gradient(circle at top left, rgba(83, 146, 247, 0.16), transparent 26%), linear-gradient(135deg, #2b313b 0%, #262b33 52%, #22272e 100%)',
+    boxShadow: '0 24px 64px rgba(0, 0, 0, 0.22)',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
   },
   heroCopy: {
     maxWidth: '760px',
@@ -184,7 +243,7 @@ const styles = {
     py: 0.75,
     borderRadius: 999,
     background: 'rgba(148, 163, 184, 0.14)',
-    color: '#bfdbfe',
+    color: '#8ab4f8',
     fontSize: 12,
     fontWeight: 700,
     letterSpacing: '0.08em',
@@ -200,7 +259,7 @@ const styles = {
   description: {
     mt: 2,
     maxWidth: '58ch',
-    color: 'rgba(226, 232, 240, 0.9)',
+    color: 'rgba(199, 210, 218, 0.9)',
     fontSize: 16,
     lineHeight: 1.8,
   },
@@ -210,12 +269,12 @@ const styles = {
     py: 1.2,
     textTransform: 'none',
     fontWeight: 700,
-    background: 'linear-gradient(135deg, #f8fafc 0%, #dbeafe 100%)',
-    color: '#0f172a',
-    boxShadow: '0 16px 30px rgba(15, 23, 42, 0.18)',
+    background: 'linear-gradient(135deg, #3574f0 0%, #235dcb 100%)',
+    color: '#eff6ff',
+    boxShadow: '0 12px 24px rgba(35, 93, 203, 0.24)',
     '&:hover': {
-      background: 'linear-gradient(135deg, #ffffff 0%, #bfdbfe 100%)',
-      boxShadow: '0 18px 34px rgba(15, 23, 42, 0.22)',
+      background: 'linear-gradient(135deg, #467ff2 0%, #3574f0 100%)',
+      boxShadow: '0 14px 28px rgba(35, 93, 203, 0.28)',
     },
   },
   secondaryButton: {
@@ -224,11 +283,11 @@ const styles = {
     py: 1.2,
     textTransform: 'none',
     fontWeight: 700,
-    borderColor: 'rgba(191, 219, 254, 0.34)',
-    color: '#e0f2fe',
+    borderColor: 'rgba(83, 146, 247, 0.34)',
+    color: '#cdd9e5',
     '&:hover': {
-      borderColor: '#99f6e4',
-      background: 'rgba(255, 255, 255, 0.06)',
+      borderColor: '#8ab4f8',
+      background: 'rgba(83, 146, 247, 0.08)',
     },
   },
   heroStats: {
@@ -244,8 +303,8 @@ const styles = {
     gap: 1,
     p: 3,
     borderRadius: 5,
-    background: 'rgba(15, 23, 42, 0.26)',
-    border: '1px solid rgba(255, 255, 255, 0.10)',
+    background: 'rgba(31, 35, 41, 0.72)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
     backdropFilter: 'blur(12px)',
   },
   statValue: {
@@ -253,8 +312,14 @@ const styles = {
     fontWeight: 800,
     color: '#f8fafc',
   },
+  statValueSmall: {
+    fontSize: '1rem',
+    fontWeight: 700,
+    color: '#f8fafc',
+    lineHeight: 1.4,
+  },
   statLabel: {
-    color: '#cbd5e1',
+    color: '#9da7b3',
     fontSize: 13,
     letterSpacing: '0.04em',
     textTransform: 'uppercase',
@@ -283,14 +348,14 @@ const styles = {
     p: 3,
     borderRadius: 5,
     background:
-      'linear-gradient(180deg, rgba(255, 255, 255, 0.90) 0%, rgba(248, 250, 252, 0.84) 100%)',
-    border: '1px solid rgba(148, 163, 184, 0.16)',
-    boxShadow: '0 18px 42px rgba(15, 23, 42, 0.05)',
+      'linear-gradient(180deg, rgba(43, 49, 59, 0.92) 0%, rgba(34, 39, 46, 0.94) 100%)',
+    border: '1px solid rgba(255, 255, 255, 0.06)',
+    boxShadow: '0 18px 42px rgba(0, 0, 0, 0.16)',
     transition: 'transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease',
     '&:hover': {
       transform: 'translateY(-4px)',
-      boxShadow: '0 26px 48px rgba(15, 23, 42, 0.10)',
-      borderColor: 'rgba(20, 184, 166, 0.24)',
+      boxShadow: '0 26px 48px rgba(0, 0, 0, 0.22)',
+      borderColor: 'rgba(83, 146, 247, 0.22)',
     },
   },
   cardIcon: {
@@ -305,11 +370,24 @@ const styles = {
   cardTitle: {
     fontSize: 18,
     fontWeight: 700,
-    color: '#0f172a',
+    color: '#e6edf3',
+  },
+  cardTitleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 1.5,
+  },
+  cardCount: {
+    flexShrink: 0,
+    color: '#7d8590',
+    fontSize: 11,
+    letterSpacing: '0.03em',
+    textTransform: 'uppercase',
   },
   cardDescription: {
     mt: 1,
-    color: '#64748b',
+    color: '#9da7b3',
     lineHeight: 1.7,
     flexGrow: 1,
   },
@@ -319,6 +397,6 @@ const styles = {
     px: 0,
     textTransform: 'none',
     fontWeight: 700,
-    color: '#2563eb',
+    color: '#8ab4f8',
   },
 };

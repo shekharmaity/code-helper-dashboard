@@ -55,16 +55,16 @@ export default function Sidebar({
         width: isMobile ? 272 : compact ? 78 : 232,
         transition: 'width 0.22s ease',
         height: '100%',
-        color: '#e2e8f0',
+        color: '#c7d2da',
         px: 1.25,
         py: 1.5,
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        borderRight: isMobile ? 'none' : '1px solid rgba(148, 163, 184, 0.12)',
+        borderRight: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.06)',
         background:
-          'linear-gradient(180deg, rgba(15, 23, 42, 0.96) 0%, rgba(15, 23, 42, 0.92) 45%, rgba(17, 94, 89, 0.94) 100%)',
-        boxShadow: 'inset -1px 0 0 rgba(255, 255, 255, 0.04)',
+          'linear-gradient(180deg, #2b313b 0%, #262b33 42%, #22272e 100%)',
+        boxShadow: 'inset -1px 0 0 rgba(255, 255, 255, 0.03)',
       }}
     >
       <Box
@@ -92,10 +92,10 @@ export default function Sidebar({
               borderRadius: 2.5,
               display: 'grid',
               placeItems: 'center',
-              bgcolor: 'rgba(255, 255, 255, 0.08)',
-              color: '#99f6e4',
+              bgcolor: 'rgba(83, 146, 247, 0.14)',
+              color: '#8ab4f8',
               flexShrink: 0,
-              boxShadow: '0 10px 24px rgba(15, 23, 42, 0.22)',
+              boxShadow: '0 10px 24px rgba(0, 0, 0, 0.22)',
             }}
           >
             <AutoAwesomeMotionIcon fontSize="small" />
@@ -106,7 +106,7 @@ export default function Sidebar({
               sx={{
                 fontSize: 14,
                 fontWeight: 700,
-                color: '#f8fafc',
+                color: '#e6edf3',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -120,8 +120,8 @@ export default function Sidebar({
             size="small"
             onClick={() => setCollapsed(true)}
             sx={{
-              color: '#94a3b8',
-              '&:hover': { color: '#e2e8f0', bgcolor: 'rgba(255, 255, 255, 0.06)' },
+              color: '#7d8590',
+              '&:hover': { color: '#e6edf3', bgcolor: 'rgba(255, 255, 255, 0.05)' },
             }}
           >
             <ChevronLeftIcon fontSize="small" />
@@ -136,8 +136,8 @@ export default function Sidebar({
               position: 'absolute',
               top: 18,
               right: 10,
-              color: '#94a3b8',
-              '&:hover': { color: '#e2e8f0', bgcolor: 'rgba(255, 255, 255, 0.06)' },
+              color: '#7d8590',
+              '&:hover': { color: '#e6edf3', bgcolor: 'rgba(255, 255, 255, 0.05)' },
             }}
           >
             <ChevronRightIcon fontSize="small" />
@@ -149,8 +149,8 @@ export default function Sidebar({
             size="small"
             onClick={onMobileClose}
             sx={{
-              color: '#94a3b8',
-              '&:hover': { color: '#e2e8f0', bgcolor: 'rgba(255, 255, 255, 0.06)' },
+              color: '#7d8590',
+              '&:hover': { color: '#e6edf3', bgcolor: 'rgba(255, 255, 255, 0.05)' },
             }}
           >
             <ChevronLeftIcon fontSize="small" />
@@ -173,12 +173,12 @@ export default function Sidebar({
                   px: compact ? 1 : 1.25,
                   borderRadius: 2.5,
                   justifyContent: compact ? 'center' : 'flex-start',
-                  color: isActive ? '#f8fafc' : '#94a3b8',
-                  bgcolor: isActive ? 'rgba(255, 255, 255, 0.10)' : 'transparent',
-                  border: isActive ? '1px solid rgba(153, 246, 228, 0.18)' : '1px solid transparent',
-                  boxShadow: isActive ? '0 14px 28px rgba(2, 6, 23, 0.18)' : 'none',
+                  color: isActive ? '#e6edf3' : '#7d8590',
+                  bgcolor: isActive ? 'rgba(83, 146, 247, 0.12)' : 'transparent',
+                  border: isActive ? '1px solid rgba(83, 146, 247, 0.22)' : '1px solid transparent',
+                  boxShadow: isActive ? 'inset 2px 0 0 #3574f0' : 'none',
                   '&:hover': {
-                    bgcolor: isActive ? 'rgba(255, 255, 255, 0.12)' : 'rgba(255, 255, 255, 0.06)',
+                    bgcolor: isActive ? 'rgba(83, 146, 247, 0.16)' : 'rgba(255, 255, 255, 0.04)',
                   },
                 }}
               >
@@ -187,7 +187,7 @@ export default function Sidebar({
                     minWidth: 0,
                     mr: compact ? 0 : 1.25,
                     justifyContent: 'center',
-                    color: isActive ? '#99f6e4' : '#94a3b8',
+                    color: isActive ? '#8ab4f8' : '#7d8590',
                   }}
                 >
                   {item.icon}
@@ -199,7 +199,7 @@ export default function Sidebar({
                     primaryTypographyProps={{
                       fontSize: 14,
                       fontWeight: isActive ? 600 : 500,
-                      color: isActive ? '#f8fafc' : '#cbd5e1',
+                      color: isActive ? '#e6edf3' : '#adbac7',
                     }}
                   />
                 )}

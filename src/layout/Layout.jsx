@@ -31,7 +31,7 @@ export default function Layout() {
           py: { xs: 1.5, md: 2.5 },
           bgcolor: 'transparent',
           background:
-            'radial-gradient(circle at top right, rgba(37, 99, 235, 0.10), transparent 22%), radial-gradient(circle at 20% 20%, rgba(20, 184, 166, 0.08), transparent 24%)',
+            'radial-gradient(circle at top right, rgba(83, 146, 247, 0.08), transparent 18%), linear-gradient(180deg, rgba(43, 49, 59, 0.72) 0%, rgba(31, 35, 41, 0.9) 100%)',
           transition: 'margin 0.3s ease',
         }}
       >
@@ -53,10 +53,11 @@ export default function Layout() {
             <IconButton
               onClick={() => setMobileNavOpen(true)}
               sx={{
-                bgcolor: 'rgba(15, 23, 42, 0.9)',
-                color: '#f8fafc',
+                bgcolor: 'rgba(53, 116, 240, 0.16)',
+                color: '#dce6f8',
+                border: '1px solid rgba(83, 146, 247, 0.28)',
                 '&:hover': {
-                  bgcolor: 'rgba(15, 23, 42, 0.96)',
+                  bgcolor: 'rgba(53, 116, 240, 0.22)',
                 },
               }}
             >
@@ -66,8 +67,8 @@ export default function Layout() {
             <Typography
               sx={{
                 fontSize: 15,
-                fontWeight: 800,
-                color: '#0f172a',
+                fontWeight: 700,
+                color: '#e6edf3',
                 letterSpacing: '-0.02em',
               }}
             >

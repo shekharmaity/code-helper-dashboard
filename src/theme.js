@@ -4,40 +4,41 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#0f766e',
-      light: '#14b8a6',
-      dark: '#115e59',
+      main: '#3574f0',
+      light: '#5b8cff',
+      dark: '#235dcb',
     },
     secondary: {
-      main: '#1d4ed8',
-      light: '#60a5fa',
-      dark: '#1e3a8a',
+      main: '#4b5563',
+      light: '#6b7280',
+      dark: '#374151',
     },
     background: {
-      default: '#edf3f8',
-      paper: 'rgba(255, 255, 255, 0.82)',
+      default: '#1f2329',
+      paper: 'rgba(43, 49, 59, 0.84)',
     },
     text: {
-      primary: '#0f172a',
-      secondary: '#475569',
+      primary: '#e6edf3',
+      secondary: '#9da7b3',
     },
-    divider: 'rgba(148, 163, 184, 0.18)',
+    divider: 'rgba(255, 255, 255, 0.08)',
   },
   shape: {
-    borderRadius: 18,
+    borderRadius: 14,
   },
   typography: {
-    fontFamily: '"Manrope", "Segoe UI", sans-serif',
+    fontFamily:
+      '"SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif',
     h2: {
-      fontWeight: 800,
+      fontWeight: 700,
       letterSpacing: '-0.04em',
     },
     h5: {
-      fontWeight: 800,
+      fontWeight: 700,
       letterSpacing: '-0.03em',
     },
     button: {
-      fontWeight: 700,
+      fontWeight: 600,
       textTransform: 'none',
     },
   },
@@ -51,8 +52,10 @@ const theme = createTheme({
           minHeight: '100%',
           margin: 0,
           background:
-            'radial-gradient(circle at top left, rgba(20, 184, 166, 0.10), transparent 24%), radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 28%), linear-gradient(180deg, #f8fbfd 0%, #edf3f8 100%)',
-          color: '#0f172a',
+            'radial-gradient(circle at top left, rgba(83, 146, 247, 0.08), transparent 20%), linear-gradient(180deg, #23272e 0%, #1f2329 100%)',
+          color: '#e6edf3',
+          fontFamily:
+            '"SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif',
         },
         '#root': {
           minHeight: '100vh',
@@ -60,33 +63,38 @@ const theme = createTheme({
         '*': {
           boxSizing: 'border-box',
         },
+        'code, pre, textarea, input': {
+          fontFamily:
+            '"SF Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", monospace',
+        },
         '::-webkit-scrollbar': {
           width: 10,
           height: 10,
         },
         '::-webkit-scrollbar-track': {
-          background: 'transparent',
+          background: '#1f2329',
         },
         '::-webkit-scrollbar-thumb': {
-          background: alpha('#64748b', 0.28),
+          background: alpha('#8b949e', 0.34),
           borderRadius: 999,
         },
         '::-webkit-scrollbar-thumb:hover': {
-          background: alpha('#475569', 0.42),
+          background: alpha('#adbac7', 0.42),
         },
       },
     },
     MuiPaper: {
       styleOverrides: {
         root: {
-          backdropFilter: 'blur(16px)',
+          backdropFilter: 'blur(14px)',
+          backgroundImage: 'none',
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 999,
+          borderRadius: 10,
           boxShadow: 'none',
         },
       },
