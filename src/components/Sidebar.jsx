@@ -98,12 +98,14 @@ export default function Sidebar({
         width: isMobile ? 252 : compact ? 72 : 212,
         transition: 'width 0.22s ease',
         height: '100%',
+        minHeight: 0,
         color: '#c7d2da',
         px: 1,
         py: 1.1,
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
+        overflow: 'hidden',
         borderRight: isMobile ? 'none' : '1px solid rgba(255, 255, 255, 0.06)',
         background:
           'linear-gradient(180deg, #2b313b 0%, #262b33 42%, #22272e 100%)',
@@ -201,7 +203,20 @@ export default function Sidebar({
         )}
       </Box>
 
-      <List sx={{ p: 0, display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+      <List
+        sx={{
+          p: 0,
+          pr: 0.5,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 0.75,
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          scrollbarWidth: 'thin',
+        }}
+      >
         {navigationSections.map((section) => (
           <Box key={section.title}>
             {!compact && (
@@ -210,6 +225,9 @@ export default function Sidebar({
                 sx={{
                   px: 1,
                   py: 0.5,
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1,
                   bgcolor: 'transparent',
                   color: '#7d8590',
                   fontSize: 10,

@@ -16,7 +16,6 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PasswordIcon from '@mui/icons-material/Password';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import StorageIcon from '@mui/icons-material/Storage';
 import CodeIcon from '@mui/icons-material/Code';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import TimerIcon from '@mui/icons-material/Timer';
@@ -243,19 +242,19 @@ export default function HomePage() {
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mt: 3 }}>
             <Button
               component={Link}
-              to="/mocks"
+              to="/json-formatter"
               variant="contained"
               sx={styles.primaryButton}
             >
-              Open Mock Manager
+              Explore Utilities
             </Button>
             <Button
               component={Link}
-              to="/json-formatter"
+              to="/openapi-workbench"
               variant="outlined"
               sx={styles.secondaryButton}
             >
-              Explore Utilities
+              Open API Tools
             </Button>
           </Stack>
         </Box>
@@ -265,11 +264,6 @@ export default function HomePage() {
             <HubIcon sx={{ color: '#93c5fd', fontSize: 20 }} />
             <Typography sx={styles.statValue}>{allUtilityCards.length}</Typography>
             <Typography sx={styles.statLabel}>Utility Pages</Typography>
-          </Box>
-          <Box sx={styles.statCard}>
-            <StorageIcon sx={{ color: '#67e8f9', fontSize: 20 }} />
-            <Typography sx={styles.statValue}>1</Typography>
-            <Typography sx={styles.statLabel}>Mock Workspace</Typography>
           </Box>
           <Box sx={styles.statCard}>
             <DashboardCustomizeIcon sx={{ color: '#8ab4f8', fontSize: 20 }} />
