@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { deleteMock, getAllMocks } from '../api/mocks';
-
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Button,
+  Dialog,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -12,15 +13,22 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { deleteMock, getAllMocks } from '../api/mocks';
+import CreateMockForm from './CreateMock';
 
 export default function MockList() {
+  const [open, setOpen] = useState(false);
   const [mocks, setMocks] = useState([]);
   const [filter, setFilter] = useState('');
   const navigate = useNavigate();
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
       const data = await getAllMocks();
       setMocks(data);
@@ -28,11 +36,11 @@ export default function MockList() {
       console.error(e);
       setMocks([]);
     }
-  };
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
   const onDelete = async (id) => {
     if (!window.confirm('Delete mock?')) return;
@@ -40,100 +48,156 @@ export default function MockList() {
     await load();
   };
 
-  const filtered = mocks.filter(
-    (m) => !filter || (m.name && m.name.toLowerCase().includes(filter.toLowerCase()))
+  const normalizedFilter = filter.trim().toLowerCase();
+
+  const filtered = useMemo(
+    () =>
+      mocks.filter(
+        (m) => !normalizedFilter || (m.name && m.name.toLowerCase().includes(normalizedFilter))
+      ),
+    [mocks, normalizedFilter],
   );
 
   return (
-    <Box
-      sx={{
-        height: '100vh',
-        boxSizing: 'border-box',
-        p: 2,
-        overflow: 'hidden',
-      }}
-    >
+    <Box sx={{ height: '100vh', overflow: 'hidden', p: 2 }}>
       <Paper
-        elevation={3}
+        elevation={4}
         sx={{
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          p: 2,
+          p: 3,
+          borderRadius: 3,
         }}
       >
-        {/* Header Section */}
+        {/* PAGE HEADER */}
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            mb: 2,
+            mb: 3,
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Mocks
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            Mock API Manager
           </Typography>
 
           <Box sx={{ display: 'flex', gap: 2 }}>
             <TextField
               size="small"
-              placeholder="Search by name"
+              variant="outlined"
+              placeholder="Search mocks…"
               value={filter}
+              sx={{ width: 250 }}
               onChange={(e) => setFilter(e.target.value)}
             />
 
-            <Button variant="contained" onClick={() => navigate('/create')}>
-              Create
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setOpen(true)}
+              sx={{
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 600,
+              }}
+            >
+              Create Mock
             </Button>
           </Box>
         </Box>
 
-        {/* Scrollable Table Section */}
-        <Box sx={{ overflowY: 'auto', flexGrow: 1 }}>
+        {/* CREATE DIALOG */}
+        <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
+          <CreateMockForm
+            onClose={() => setOpen(false)}
+            onCreated={() => {
+              setOpen(false);
+              load();
+            }}
+          />
+        </Dialog>
+
+        {/* TABLE SECTION */}
+        <Box
+          sx={{
+            overflowY: 'auto',
+            flexGrow: 1,
+            borderRadius: 2,
+            border: '1px solid #e0e0e0',
+          }}
+        >
           <Table stickyHeader>
             <TableHead>
               <TableRow>
-                <TableCell>
-                  <b>Name</b>
-                </TableCell>
-                <TableCell>
-                  <b>Method</b>
-                </TableCell>
-                <TableCell>
-                  <b>Path</b>
-                </TableCell>
-                <TableCell>
-                  <b>Type</b>
-                </TableCell>
-                <TableCell>
-                  <b>Priority</b>
-                </TableCell>
-                <TableCell>
-                  <b>Actions</b>
-                </TableCell>
+                {['Name', 'Method', 'Path', 'Type', 'Priority', 'Actions'].map((header) => (
+                  <TableCell
+                    key={header}
+                    sx={{
+                      fontWeight: 'bold',
+                      background: '#f8fafc',
+                      fontSize: '0.95rem',
+                    }}
+                  >
+                    {header}
+                  </TableCell>
+                ))}
               </TableRow>
             </TableHead>
 
             <TableBody>
               {filtered.map((m) => (
-                <TableRow hover key={m.id}>
+                <TableRow
+                  hover
+                  key={m.id}
+                  sx={{
+                    '&:hover': { backgroundColor: '#f7f9fc' },
+                  }}
+                >
                   <TableCell>{m.name}</TableCell>
-                  <TableCell>{m.method}</TableCell>
+                  <TableCell>
+                    <Box
+                      sx={{
+                        display: 'inline-block',
+                        px: 1.2,
+                        py: 0.3,
+                        borderRadius: 2,
+                        fontWeight: 'bold',
+                        fontSize: '0.8rem',
+                        bgcolor: '#eef2ff',
+                        color: '#3730a3',
+                      }}
+                    >
+                      {m.method}
+                    </Box>
+                  </TableCell>
                   <TableCell>{m.pathPattern}</TableCell>
                   <TableCell>{m.responseType}</TableCell>
                   <TableCell>{m.priority}</TableCell>
                   <TableCell>
-                    <Button size="small" onClick={() => navigate(`/edit/${m.id}`)}>
-                      Edit
-                    </Button>
+                    <Tooltip title="Edit">
+                      <IconButton onClick={() => navigate(`/edit/${m.id}`)} size="small">
+                        <EditIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Tooltip>
 
-                    <Button size="small" color="error" onClick={() => onDelete(m.id)}>
-                      Delete
-                    </Button>
+                    <Tooltip title="Delete">
+                      <IconButton size="small" color="error" onClick={() => onDelete(m.id)}>
+                        <DeleteIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
+
+              {filtered.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'gray' }}>
+                    No mocks found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </Box>
