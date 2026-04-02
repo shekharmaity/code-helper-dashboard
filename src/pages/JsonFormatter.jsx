@@ -1,17 +1,7 @@
 import jsonlint from 'jsonlint-mod';
 import { useMemo, useState } from 'react';
-import {
-  FiChevronDown,
-  FiChevronRight,
-  FiCode,
-  FiCopy,
-  FiFileText,
-  FiLayers,
-  FiMinimize2,
-  FiTrash2,
-} from 'react-icons/fi';
-
-const EMPTY_COLLAPSED_STATE = {};
+import { FiCode, FiCopy, FiEdit3, FiMinimize2, FiTrash2 } from 'react-icons/fi';
+import StructuredDataTree from '../components/StructuredDataTree';
 
 function getTextSize(value) {
   return new TextEncoder().encode(value).length;
@@ -29,70 +19,8 @@ function formatSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
-function getIndentLevel(line) {
-  const firstNonSpaceIndex = line.search(/\S/);
-  return firstNonSpaceIndex === -1 ? 0 : firstNonSpaceIndex;
-}
-
-function isCollapsibleOpeningLine(line) {
-  const trimmed = line.trim();
-  return trimmed.endsWith('{') || trimmed.endsWith('[');
-}
-
-function isClosingLine(line) {
-  const trimmed = line.trim();
-  return trimmed.startsWith('}') || trimmed.startsWith(']');
-}
-
-function buildJsonRanges(lines) {
-  const stack = [];
-  const ranges = {};
-
-  lines.forEach((line, index) => {
-    const trimmed = line.trim();
-    const indent = getIndentLevel(line);
-
-    if (isCollapsibleOpeningLine(line)) {
-      stack.push({ index, indent, type: trimmed.at(-1) });
-      return;
-    }
-
-    if (!isClosingLine(line)) {
-      return;
-    }
-
-    const closingType = trimmed[0] === '}' ? '{' : '[';
-
-    for (let stackIndex = stack.length - 1; stackIndex >= 0; stackIndex -= 1) {
-      const item = stack[stackIndex];
-
-      if (item.indent === indent && item.type === closingType) {
-        ranges[item.index] = index;
-        stack.splice(stackIndex, 1);
-        break;
-      }
-    }
-  });
-
-  return ranges;
-}
-
-function getCollapsedPreview(line) {
-  const trimmed = line.trim();
-
-  if (trimmed.endsWith('{')) {
-    return `${trimmed.slice(0, -1).trimEnd()} { ... }`;
-  }
-
-  if (trimmed.endsWith('[')) {
-    return `${trimmed.slice(0, -1).trimEnd()} [ ... ]`;
-  }
-
-  return trimmed;
-}
-
 function getActionButtonStyle(variant) {
-  const styles = {
+  const buttonVariants = {
     primary: {
       background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
       color: '#eff6ff',
@@ -111,86 +39,77 @@ function getActionButtonStyle(variant) {
     },
   };
 
-  return { ...stylesBase.actionButton, ...styles[variant] };
+  return { ...stylesBase.actionButton, ...buttonVariants[variant] };
 }
 
 export default function JsonFormatter() {
   const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
-  const [collapsed, setCollapsed] = useState(EMPTY_COLLAPSED_STATE);
+  const [treeData, setTreeData] = useState();
+  const [view, setView] = useState('editor');
 
-  const lines = useMemo(() => (output ? output.split('\n') : []), [output]);
-  const ranges = useMemo(() => buildJsonRanges(lines), [lines]);
+  const parsedJson = () => jsonlint.parse(input);
+  const lineCount = useMemo(() => (input ? input.split('\n').length : 0), [input]);
+  const blockCount = useMemo(() => {
+    if (!treeData || typeof treeData !== 'object') {
+      return 0;
+    }
 
-  const hiddenLines = useMemo(() => {
-    const indexes = new Set();
-
-    Object.entries(collapsed).forEach(([rawIndex, isCollapsed]) => {
-      if (!isCollapsed) {
-        return;
+    const countNodes = (value) => {
+      if (!value || typeof value !== 'object') {
+        return 0;
       }
 
-      const index = Number(rawIndex);
-      const endIndex = ranges[index];
+      const children = Array.isArray(value) ? value : Object.values(value);
+      return 1 + children.reduce((total, child) => total + countNodes(child), 0);
+    };
 
-      if (endIndex === undefined) {
-        return;
-      }
-
-      for (let lineIndex = index + 1; lineIndex <= endIndex; lineIndex += 1) {
-        indexes.add(lineIndex);
-      }
-    });
-
-    return indexes;
-  }, [collapsed, ranges]);
-
-  const lineCount = lines.length;
-  const blockCount = useMemo(
-    () => lines.filter((line) => isCollapsibleOpeningLine(line.trim())).length,
-    [lines],
-  );
+    return countNodes(treeData);
+  }, [treeData]);
   const inputSize = useMemo(() => formatSize(getTextSize(input)), [input]);
-  const outputSize = useMemo(() => formatSize(getTextSize(output)), [output]);
 
-  const updateOutput = (nextOutput) => {
-    setOutput(nextOutput);
+  const updateWorkspace = (nextInput, nextTreeData) => {
+    setInput(nextInput);
+    setTreeData(nextTreeData);
+    setView('tree');
     setError('');
     setCopied(false);
-    setCollapsed(EMPTY_COLLAPSED_STATE);
   };
-
-  const parseJson = () => jsonlint.parse(input);
 
   const handleFormat = () => {
     try {
-      updateOutput(JSON.stringify(parseJson(), null, 2));
+      const parsed = parsedJson();
+      updateWorkspace(JSON.stringify(parsed, null, 2), parsed);
     } catch (err) {
       setError(err.message);
-      setOutput('');
-      setCollapsed(EMPTY_COLLAPSED_STATE);
+      setTreeData(undefined);
+      setView('editor');
     }
   };
 
   const handleMinify = () => {
     try {
-      updateOutput(JSON.stringify(parseJson()));
+      const parsed = parsedJson();
+      setInput(JSON.stringify(parsed));
+      setTreeData(undefined);
+      setView('editor');
+      setError('');
+      setCopied(false);
     } catch (err) {
       setError(err.message);
-      setOutput('');
-      setCollapsed(EMPTY_COLLAPSED_STATE);
+      setTreeData(undefined);
+      setView('editor');
     }
   };
 
   const handleCopy = async () => {
-    if (!output) {
+    if (!input) {
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(output);
+      await navigator.clipboard.writeText(input);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch (err) {
@@ -200,58 +119,10 @@ export default function JsonFormatter() {
 
   const handleClear = () => {
     setInput('');
-    setOutput('');
     setError('');
     setCopied(false);
-    setCollapsed(EMPTY_COLLAPSED_STATE);
-  };
-
-  const toggleCollapse = (index) => {
-    setCollapsed((prev) => ({ ...prev, [index]: !prev[index] }));
-  };
-
-  const renderJson = () => {
-    if (!lines.length) {
-      return (
-        <div style={styles.placeholder}>
-          <FiLayers size={18} />
-          <div>
-            <div style={styles.placeholderTitle}>Formatted JSON will appear here</div>
-            <div style={styles.placeholderText}>
-              Use Format for readable inspection or Minify for compact payload output.
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    return lines.map((line, index) => {
-      if (hiddenLines.has(index)) {
-        return null;
-      }
-
-      const trimmed = line.trim();
-      const hasChildren = ranges[index] !== undefined;
-      const indentLevel = getIndentLevel(line);
-
-      return (
-        <div key={index} style={{ ...styles.line, paddingLeft: `${indentLevel + 14}px` }}>
-          <span style={styles.toggle}>
-            {hasChildren ? (
-              <button
-                type="button"
-                style={styles.toggleButton}
-                onClick={() => toggleCollapse(index)}
-                aria-label={collapsed[index] ? 'Expand JSON node' : 'Collapse JSON node'}
-              >
-                {collapsed[index] ? <FiChevronRight /> : <FiChevronDown />}
-              </button>
-            ) : null}
-          </span>
-          <span>{collapsed[index] ? getCollapsedPreview(trimmed) : trimmed}</span>
-        </div>
-      );
-    });
+    setTreeData(undefined);
+    setView('editor');
   };
 
   return (
@@ -261,27 +132,27 @@ export default function JsonFormatter() {
           <div style={styles.eyebrow}>Developer Utility</div>
           <h2 style={styles.title}>JSON Formatter</h2>
           <p style={styles.description}>
-            Validate, format, and inspect API payloads with a cleaner workspace built for quick
-            debugging and nested object review.
+            Paste raw JSON, format or minify it, and review the result as a tree in the same
+            workspace instead of a second output panel.
           </p>
         </div>
 
         <div style={styles.stats}>
           <div style={styles.statCard}>
-            <span style={styles.statLabel}>Input Size</span>
+            <span style={styles.statLabel}>Workspace Size</span>
             <span style={styles.statValue}>{inputSize}</span>
           </div>
           <div style={styles.statCard}>
-            <span style={styles.statLabel}>Output Size</span>
-            <span style={styles.statValue}>{outputSize}</span>
-          </div>
-          <div style={styles.statCard}>
-            <span style={styles.statLabel}>Output Lines</span>
+            <span style={styles.statLabel}>Visible Lines</span>
             <span style={styles.statValue}>{lineCount}</span>
           </div>
           <div style={styles.statCard}>
-            <span style={styles.statLabel}>Collapsible Blocks</span>
+            <span style={styles.statLabel}>Tree Blocks</span>
             <span style={styles.statValue}>{blockCount}</span>
+          </div>
+          <div style={styles.statCard}>
+            <span style={styles.statLabel}>Mode</span>
+            <span style={styles.statValue}>{view === 'tree' ? 'Tree View' : 'Raw Input'}</span>
           </div>
         </div>
       </div>
@@ -297,11 +168,23 @@ export default function JsonFormatter() {
         </button>
         <button
           type="button"
-          onClick={handleCopy}
-          disabled={!output}
+          onClick={() => setView('editor')}
+          disabled={!input}
           style={{
             ...getActionButtonStyle('secondary'),
-            ...(output ? null : styles.disabledButton),
+            ...(input ? null : styles.disabledButton),
+          }}
+        >
+          <FiEdit3 />
+          Edit Raw
+        </button>
+        <button
+          type="button"
+          onClick={handleCopy}
+          disabled={!input}
+          style={{
+            ...getActionButtonStyle('secondary'),
+            ...(input ? null : styles.disabledButton),
           }}
         >
           <FiCopy />
@@ -315,42 +198,41 @@ export default function JsonFormatter() {
 
       {error && <div style={styles.error}>{error}</div>}
 
-      <div style={styles.grid}>
-        <section style={styles.panel}>
-          <div style={styles.panelHeader}>
-            <div>
-              <div style={styles.panelTitle}>Input JSON</div>
-              <div style={styles.panelSubtitle}>Paste a raw request body or API response.</div>
-            </div>
-            <div style={styles.panelBadge}>
-              <FiFileText size={14} />
-              Source
+      <section style={styles.panel}>
+        <div style={styles.panelHeader}>
+          <div>
+            <div style={styles.panelTitle}>JSON Workspace</div>
+            <div style={styles.panelSubtitle}>
+              {view === 'tree'
+                ? 'Formatted data is rendered as a collapsible tree in this same panel.'
+                : 'Paste or edit raw JSON here, then format it when you are ready.'}
             </div>
           </div>
+          <div style={styles.panelBadge}>{view === 'tree' ? 'Tree View' : 'Editor'}</div>
+        </div>
 
-          <textarea
-            style={styles.textarea}
-            placeholder="Paste JSON here..."
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-          />
-        </section>
-
-        <section style={styles.outputPanel}>
-          <div style={styles.panelHeader}>
-            <div>
-              <div style={styles.outputTitle}>Formatted Output</div>
-              <div style={styles.outputSubtitle}>Expand and collapse nested structures inline.</div>
-            </div>
-            <div style={styles.outputBadge}>
-              <FiLayers size={14} />
-              Inspector
-            </div>
-          </div>
-
-          <div style={styles.output}>{renderJson()}</div>
-        </section>
-      </div>
+        <div style={styles.workspace}>
+          {view === 'tree' ? (
+            <StructuredDataTree
+              data={treeData}
+              emptyTitle="Formatted JSON will appear here"
+              emptyHint="Use Format to turn the current input into a tree view."
+            />
+          ) : (
+            <textarea
+              style={styles.textarea}
+              placeholder="Paste JSON here..."
+              value={input}
+              onChange={(event) => {
+                setInput(event.target.value);
+                setTreeData(undefined);
+                setError('');
+                setCopied(false);
+              }}
+            />
+          )}
+        </div>
+      </section>
     </div>
   );
 }
@@ -467,26 +349,10 @@ const styles = {
     color: '#b91c1c',
     fontWeight: '500',
   },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-    gap: '14px',
-    alignItems: 'stretch',
-  },
   panel: {
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '340px',
-    padding: '16px',
-    borderRadius: '16px',
-    background: '#ffffff',
-    border: '1px solid rgba(148, 163, 184, 0.18)',
-    boxShadow: '0 22px 48px rgba(15, 23, 42, 0.08)',
-  },
-  outputPanel: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '340px',
+    minHeight: '560px',
     padding: '16px',
     borderRadius: '16px',
     background: 'linear-gradient(180deg, #111827 0%, #0f172a 100%)',
@@ -501,113 +367,46 @@ const styles = {
     marginBottom: '12px',
   },
   panelTitle: {
-    color: '#0f172a',
+    color: '#f8fafc',
     fontSize: '16px',
     fontWeight: '700',
   },
   panelSubtitle: {
     marginTop: '4px',
-    color: '#64748b',
+    color: '#94a3b8',
     fontSize: '12px',
   },
   panelBadge: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '6px',
-    padding: '6px 8px',
+    padding: '6px 10px',
     borderRadius: '999px',
-    background: '#eff6ff',
-    color: '#1e3a8a',
+    background: 'rgba(59, 130, 246, 0.12)',
+    color: '#93c5fd',
     fontSize: '11px',
     fontWeight: '700',
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
   },
-  outputTitle: {
-    color: '#f8fafc',
-    fontSize: '16px',
-    fontWeight: '700',
-  },
-  outputSubtitle: {
-    marginTop: '4px',
-    color: '#94a3b8',
-    fontSize: '12px',
-  },
-  outputBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '6px 8px',
-    borderRadius: '999px',
-    background: 'rgba(51, 65, 85, 0.62)',
-    color: '#e2e8f0',
-    fontSize: '11px',
-    fontWeight: '700',
+  workspace: {
+    flex: 1,
+    overflow: 'hidden',
+    borderRadius: '14px',
+    border: '1px solid rgba(148, 163, 184, 0.14)',
+    background: 'rgba(15, 23, 42, 0.34)',
   },
   textarea: {
-    flex: 1,
     width: '100%',
-    minHeight: '100%',
-    padding: '14px',
-    borderRadius: '14px',
-    border: '1px solid rgba(148, 163, 184, 0.26)',
-    background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
-    color: '#0f172a',
-    fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
-    fontSize: '13px',
-    lineHeight: 1.55,
-    resize: 'vertical',
-    outline: 'none',
-    boxSizing: 'border-box',
-  },
-  output: {
-    flex: 1,
-    minHeight: '100%',
-    padding: '16px',
-    borderRadius: '18px',
-    background:
-      'linear-gradient(180deg, rgba(15, 23, 42, 0.52) 0%, rgba(2, 6, 23, 0.82) 100%)',
-    color: '#e2e8f0',
-    overflowX: 'auto',
-    fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
-    fontSize: '14px',
-    lineHeight: 1.65,
-    boxSizing: 'border-box',
-  },
-  placeholder: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '14px',
-    color: '#94a3b8',
-    minHeight: '100%',
-  },
-  placeholderTitle: {
-    color: '#f8fafc',
-    fontWeight: '600',
-    marginBottom: '4px',
-  },
-  placeholderText: {
-    color: '#94a3b8',
-    fontSize: '13px',
-  },
-  line: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    minHeight: '24px',
-    whiteSpace: 'pre-wrap',
-  },
-  toggle: {
-    width: '24px',
-    marginLeft: '-24px',
-    display: 'inline-flex',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  toggleButton: {
+    minHeight: '500px',
+    height: '100%',
     border: 'none',
+    outline: 'none',
+    resize: 'vertical',
+    padding: '16px',
     background: 'transparent',
-    color: '#93c5fd',
-    cursor: 'pointer',
-    padding: 0,
-    display: 'inline-flex',
-    alignItems: 'center',
+    color: '#e2e8f0',
+    fontSize: '13px',
+    lineHeight: 1.7,
+    fontFamily: '"SF Mono", "SFMono-Regular", Consolas, monospace',
   },
 };

@@ -185,6 +185,12 @@ export default function HomePage() {
   const [clickCounts, setClickCounts] = useState({});
 
   const allUtilityCards = utilitySections.flatMap((section) => section.items);
+  const utilitiesWithSection = utilitySections.flatMap((section) =>
+    section.items.map((item) => ({
+      ...item,
+      section: section.title,
+    })),
+  );
 
   const mostUsedTool = allUtilityCards.reduce(
     (best, card) => {
@@ -276,43 +282,41 @@ export default function HomePage() {
         </Box>
       </Paper>
 
-      {utilitySections.map((section) => (
-        <Box key={section.title}>
-          <Box sx={styles.sectionHeader}>
-            <Typography variant="h5" sx={styles.sectionTitle}>
-              {section.title}
-            </Typography>
-            <Typography sx={styles.sectionSubtitle}>
-              {section.title === 'Inspect' && 'Format, compare, and validate payloads quickly.'}
-              {section.title === 'Encode' && 'Handle common transport and auth encodings in one place.'}
-              {section.title === 'Convert' && 'Switch between formats, identifiers, and helper builders fast.'}
-            </Typography>
-          </Box>
+      <Box sx={styles.sectionHeader}>
+        <Typography variant="h5" sx={styles.sectionTitle}>
+          All Utilities
+        </Typography>
+        <Typography sx={styles.sectionSubtitle}>
+          Formatter, encoder, diff, and conversion tools now stay in one shared grid for quicker
+          scanning.
+        </Typography>
+      </Box>
 
-          <Box sx={styles.cardGrid}>
-            {section.items.map((card) => (
-              <Paper key={card.path} elevation={0} sx={styles.card}>
-                <Box sx={{ ...styles.cardIcon, background: card.accent }}>{card.icon}</Box>
-                <Box sx={styles.cardTitleRow}>
-                  <Typography sx={styles.cardTitle}>{card.title}</Typography>
-                  <Typography sx={styles.cardCount}>
-                    {clickCounts[card.path] ?? 0} clicks
-                  </Typography>
-                </Box>
-                <Typography sx={styles.cardDescription}>{card.description}</Typography>
-                <Button
-                  component={Link}
-                  to={card.path}
-                  sx={styles.cardButton}
-                  onClick={() => handleCardClick(card.path)}
-                >
-                  Open
-                </Button>
-              </Paper>
-            ))}
-          </Box>
-        </Box>
-      ))}
+      <Box sx={styles.cardGrid}>
+        {utilitiesWithSection.map((card) => (
+          <Paper key={card.path} elevation={0} sx={styles.card}>
+            <Box sx={{ ...styles.cardIcon, background: card.accent }}>{card.icon}</Box>
+            <Box sx={styles.cardMetaRow}>
+              <Typography sx={styles.cardSection}>{card.section}</Typography>
+              <Typography sx={styles.cardCount}>
+                {clickCounts[card.path] ?? 0} clicks
+              </Typography>
+            </Box>
+            <Box sx={styles.cardTitleRow}>
+              <Typography sx={styles.cardTitle}>{card.title}</Typography>
+            </Box>
+            <Typography sx={styles.cardDescription}>{card.description}</Typography>
+            <Button
+              component={Link}
+              to={card.path}
+              sx={styles.cardButton}
+              onClick={() => handleCardClick(card.path)}
+            >
+              Open
+            </Button>
+          </Paper>
+        ))}
+      </Box>
     </Box>
   );
 }
@@ -481,8 +485,28 @@ const styles = {
   cardTitleRow: {
     display: 'flex',
     alignItems: 'center',
+    gap: 1,
+  },
+  cardMetaRow: {
+    display: 'flex',
+    alignItems: 'center',
     justifyContent: 'space-between',
     gap: 1.5,
+    mb: 0.8,
+  },
+  cardSection: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    width: 'fit-content',
+    px: 1,
+    py: 0.35,
+    borderRadius: 999,
+    background: 'rgba(138, 180, 248, 0.14)',
+    color: '#8ab4f8',
+    fontSize: 10,
+    fontWeight: 700,
+    letterSpacing: '0.05em',
+    textTransform: 'uppercase',
   },
   cardCount: {
     flexShrink: 0,

@@ -1,14 +1,5 @@
 import { useMemo, useState } from 'react';
-import {
-  FiChevronDown,
-  FiChevronRight,
-  FiCode,
-  FiCopy,
-  FiFileText,
-  FiLayers,
-  FiMinimize2,
-  FiTrash2,
-} from 'react-icons/fi';
+import { FiChevronDown, FiChevronRight, FiCode, FiCopy, FiEdit3, FiMinimize2, FiTrash2 } from 'react-icons/fi';
 import formatXml from 'xml-formatter';
 
 const FORMAT_OPTIONS = {
@@ -96,7 +87,7 @@ function getCollapsedPreview(line) {
 }
 
 function getActionButtonStyle(variant) {
-  const variants = {
+  const buttonVariants = {
     primary: {
       background: 'linear-gradient(135deg, #0f766e 0%, #115e59 100%)',
       color: '#f8fafc',
@@ -115,17 +106,18 @@ function getActionButtonStyle(variant) {
     },
   };
 
-  return { ...stylesBase.actionButton, ...variants[variant] };
+  return { ...stylesBase.actionButton, ...buttonVariants[variant] };
 }
 
 export default function XmlFormatter() {
   const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [formattedValue, setFormattedValue] = useState('');
   const [collapsed, setCollapsed] = useState(EMPTY_COLLAPSED_STATE);
+  const [view, setView] = useState('editor');
 
-  const lines = useMemo(() => (output ? output.split('\n') : []), [output]);
+  const lines = useMemo(() => (formattedValue ? formattedValue.split('\n') : []), [formattedValue]);
   const ranges = useMemo(() => buildXmlRanges(lines), [lines]);
 
   const hiddenLines = useMemo(() => {
@@ -151,16 +143,17 @@ export default function XmlFormatter() {
     return indexes;
   }, [collapsed, ranges]);
 
-  const lineCount = lines.length;
   const nodeCount = useMemo(
     () => lines.filter((line) => isCollapsibleOpeningTag(line.trim())).length,
     [lines],
   );
+  const lineCount = lines.length || (input ? input.split('\n').length : 0);
   const inputSize = useMemo(() => formatSize(getTextSize(input)), [input]);
-  const outputSize = useMemo(() => formatSize(getTextSize(output)), [output]);
 
-  const updateOutput = (nextOutput) => {
-    setOutput(nextOutput);
+  const updateWorkspace = (nextInput, nextFormattedValue) => {
+    setInput(nextInput);
+    setFormattedValue(nextFormattedValue);
+    setView('tree');
     setError('');
     setCopied(false);
     setCollapsed(EMPTY_COLLAPSED_STATE);
@@ -168,32 +161,41 @@ export default function XmlFormatter() {
 
   const handleFormat = () => {
     try {
-      updateOutput(formatXml(input, FORMAT_OPTIONS));
+      const formatted = formatXml(input, FORMAT_OPTIONS);
+      updateWorkspace(formatted, formatted);
     } catch (err) {
       setError(`Invalid XML: ${err.message}`);
-      setOutput('');
+      setFormattedValue('');
       setCollapsed(EMPTY_COLLAPSED_STATE);
+      setView('editor');
     }
   };
 
   const handleMinify = () => {
     try {
       const formatted = formatXml(input, FORMAT_OPTIONS);
-      updateOutput(formatted.replace(/>\s+</g, '><').trim());
+      const minified = formatted.replace(/>\s+</g, '><').trim();
+      setInput(minified);
+      setFormattedValue('');
+      setView('editor');
+      setError('');
+      setCopied(false);
+      setCollapsed(EMPTY_COLLAPSED_STATE);
     } catch (err) {
       setError(`Invalid XML: ${err.message}`);
-      setOutput('');
+      setFormattedValue('');
       setCollapsed(EMPTY_COLLAPSED_STATE);
+      setView('editor');
     }
   };
 
   const handleCopy = async () => {
-    if (!output) {
+    if (!input) {
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(output);
+      await navigator.clipboard.writeText(input);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch (err) {
@@ -203,26 +205,24 @@ export default function XmlFormatter() {
 
   const handleClear = () => {
     setInput('');
-    setOutput('');
+    setFormattedValue('');
     setError('');
     setCopied(false);
     setCollapsed(EMPTY_COLLAPSED_STATE);
+    setView('editor');
   };
 
   const toggleCollapse = (index) => {
     setCollapsed((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  const renderXml = () => {
+  const renderXmlTree = () => {
     if (!lines.length) {
       return (
         <div style={styles.placeholder}>
-          <FiLayers size={18} />
-          <div>
-            <div style={styles.placeholderTitle}>Formatted XML will appear here</div>
-            <div style={styles.placeholderText}>
-              Use Format for readable structure or Minify for compact transport output.
-            </div>
+          <div style={styles.placeholderTitle}>Formatted XML will appear here</div>
+          <div style={styles.placeholderText}>
+            Use Format to render the current XML as a collapsible tree in this panel.
           </div>
         </div>
       );
@@ -247,7 +247,7 @@ export default function XmlFormatter() {
                 onClick={() => toggleCollapse(index)}
                 aria-label={collapsed[index] ? 'Expand XML node' : 'Collapse XML node'}
               >
-                {collapsed[index] ? <FiChevronRight /> : <FiChevronDown />}
+                {collapsed[index] ? <FiChevronRight size={14} /> : <FiChevronDown size={14} />}
               </button>
             ) : null}
           </span>
@@ -264,27 +264,27 @@ export default function XmlFormatter() {
           <div style={styles.eyebrow}>Developer Utility</div>
           <h2 style={styles.title}>XML Formatter</h2>
           <p style={styles.description}>
-            Clean up payloads, inspect nested nodes, and switch between readable and transport-ready
-            XML without leaving the dashboard.
+            Format or minify XML, then inspect it as a collapsible tree in the same workspace area
+            without a separate output box.
           </p>
         </div>
 
         <div style={styles.stats}>
           <div style={styles.statCard}>
-            <span style={styles.statLabel}>Input Size</span>
+            <span style={styles.statLabel}>Workspace Size</span>
             <span style={styles.statValue}>{inputSize}</span>
           </div>
           <div style={styles.statCard}>
-            <span style={styles.statLabel}>Output Size</span>
-            <span style={styles.statValue}>{outputSize}</span>
-          </div>
-          <div style={styles.statCard}>
-            <span style={styles.statLabel}>Output Lines</span>
+            <span style={styles.statLabel}>Visible Lines</span>
             <span style={styles.statValue}>{lineCount}</span>
           </div>
           <div style={styles.statCard}>
-            <span style={styles.statLabel}>Collapsible Nodes</span>
+            <span style={styles.statLabel}>Tree Nodes</span>
             <span style={styles.statValue}>{nodeCount}</span>
+          </div>
+          <div style={styles.statCard}>
+            <span style={styles.statLabel}>Mode</span>
+            <span style={styles.statValue}>{view === 'tree' ? 'Tree View' : 'Raw Input'}</span>
           </div>
         </div>
       </div>
@@ -300,11 +300,23 @@ export default function XmlFormatter() {
         </button>
         <button
           type="button"
-          onClick={handleCopy}
-          disabled={!output}
+          onClick={() => setView('editor')}
+          disabled={!input}
           style={{
             ...getActionButtonStyle('secondary'),
-            ...(output ? null : styles.disabledButton),
+            ...(input ? null : styles.disabledButton),
+          }}
+        >
+          <FiEdit3 />
+          Edit Raw
+        </button>
+        <button
+          type="button"
+          onClick={handleCopy}
+          disabled={!input}
+          style={{
+            ...getActionButtonStyle('secondary'),
+            ...(input ? null : styles.disabledButton),
           }}
         >
           <FiCopy />
@@ -318,42 +330,38 @@ export default function XmlFormatter() {
 
       {error && <div style={styles.error}>{error}</div>}
 
-      <div style={styles.grid}>
-        <section style={styles.panel}>
-          <div style={styles.panelHeader}>
-            <div>
-              <div style={styles.panelTitle}>Input XML</div>
-              <div style={styles.panelSubtitle}>Paste a raw payload or service response.</div>
-            </div>
-            <div style={styles.panelBadge}>
-              <FiFileText size={14} />
-              Source
+      <section style={styles.panel}>
+        <div style={styles.panelHeader}>
+          <div>
+            <div style={styles.panelTitle}>XML Workspace</div>
+            <div style={styles.panelSubtitle}>
+              {view === 'tree'
+                ? 'Formatted XML is rendered as a collapsible tree right here.'
+                : 'Paste or edit raw XML here, then format it when you are ready.'}
             </div>
           </div>
+          <div style={styles.panelBadge}>{view === 'tree' ? 'Tree View' : 'Editor'}</div>
+        </div>
 
-          <textarea
-            style={styles.textarea}
-            placeholder="Paste XML here..."
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-          />
-        </section>
-
-        <section style={styles.outputPanel}>
-          <div style={styles.panelHeader}>
-            <div>
-              <div style={styles.outputTitle}>Formatted Output</div>
-              <div style={styles.outputSubtitle}>Expand and collapse nested nodes inline.</div>
-            </div>
-            <div style={styles.outputBadge}>
-              <FiLayers size={14} />
-              Inspector
-            </div>
-          </div>
-
-          <div style={styles.output}>{renderXml()}</div>
-        </section>
-      </div>
+        <div style={styles.workspace}>
+          {view === 'tree' ? (
+            <div style={styles.treeViewport}>{renderXmlTree()}</div>
+          ) : (
+            <textarea
+              style={styles.textarea}
+              placeholder="Paste XML here..."
+              value={input}
+              onChange={(event) => {
+                setInput(event.target.value);
+                setFormattedValue('');
+                setError('');
+                setCopied(false);
+                setCollapsed(EMPTY_COLLAPSED_STATE);
+              }}
+            />
+          )}
+        </div>
+      </section>
     </div>
   );
 }
@@ -470,26 +478,10 @@ const styles = {
     color: '#b91c1c',
     fontWeight: '500',
   },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-    gap: '14px',
-    alignItems: 'stretch',
-  },
   panel: {
     display: 'flex',
     flexDirection: 'column',
-    minHeight: '340px',
-    padding: '16px',
-    borderRadius: '16px',
-    background: '#ffffff',
-    border: '1px solid rgba(148, 163, 184, 0.18)',
-    boxShadow: '0 22px 48px rgba(15, 23, 42, 0.08)',
-  },
-  outputPanel: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '340px',
+    minHeight: '560px',
     padding: '16px',
     borderRadius: '16px',
     background: 'linear-gradient(180deg, #111827 0%, #0f172a 100%)',
@@ -504,113 +496,104 @@ const styles = {
     marginBottom: '12px',
   },
   panelTitle: {
-    color: '#0f172a',
+    color: '#f8fafc',
     fontSize: '16px',
     fontWeight: '700',
   },
   panelSubtitle: {
     marginTop: '4px',
-    color: '#64748b',
+    color: '#94a3b8',
     fontSize: '12px',
   },
   panelBadge: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '6px',
-    padding: '6px 8px',
+    padding: '6px 10px',
     borderRadius: '999px',
-    background: '#f1f5f9',
-    color: '#0f172a',
+    background: 'rgba(20, 184, 166, 0.12)',
+    color: '#99f6e4',
     fontSize: '11px',
     fontWeight: '700',
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
   },
-  outputTitle: {
-    color: '#f8fafc',
-    fontSize: '16px',
-    fontWeight: '700',
+  workspace: {
+    flex: 1,
+    overflow: 'hidden',
+    borderRadius: '14px',
+    border: '1px solid rgba(148, 163, 184, 0.14)',
+    background: 'rgba(15, 23, 42, 0.34)',
   },
-  outputSubtitle: {
-    marginTop: '4px',
-    color: '#94a3b8',
-    fontSize: '12px',
-  },
-  outputBadge: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '6px',
-    padding: '6px 8px',
-    borderRadius: '999px',
-    background: 'rgba(51, 65, 85, 0.62)',
-    color: '#e2e8f0',
-    fontSize: '11px',
-    fontWeight: '700',
+  treeViewport: {
+    height: '100%',
+    minHeight: '500px',
+    overflow: 'auto',
+    padding: '14px 0',
+    color: '#dbeafe',
+    fontSize: '13px',
+    lineHeight: 1.7,
+    fontFamily: '"SF Mono", "SFMono-Regular", Consolas, monospace',
   },
   textarea: {
-    flex: 1,
     width: '100%',
-    minHeight: '100%',
-    padding: '14px',
-    borderRadius: '14px',
-    border: '1px solid rgba(148, 163, 184, 0.26)',
-    background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)',
-    color: '#0f172a',
-    fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
-    fontSize: '13px',
-    lineHeight: 1.55,
-    resize: 'vertical',
+    minHeight: '500px',
+    height: '100%',
+    border: 'none',
     outline: 'none',
-    boxSizing: 'border-box',
-  },
-  output: {
-    flex: 1,
-    minHeight: '100%',
-    padding: '14px',
-    borderRadius: '14px',
-    background:
-      'linear-gradient(180deg, rgba(15, 23, 42, 0.52) 0%, rgba(2, 6, 23, 0.82) 100%)',
+    resize: 'vertical',
+    padding: '16px',
+    background: 'transparent',
     color: '#e2e8f0',
-    overflowX: 'auto',
-    fontFamily: '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace',
     fontSize: '13px',
-    lineHeight: 1.55,
-    boxSizing: 'border-box',
-  },
-  placeholder: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    color: '#94a3b8',
-    minHeight: '100%',
-  },
-  placeholderTitle: {
-    color: '#f8fafc',
-    fontWeight: '600',
-    marginBottom: '4px',
-  },
-  placeholderText: {
-    color: '#94a3b8',
-    fontSize: '12px',
+    lineHeight: 1.7,
+    fontFamily: '"SF Mono", "SFMono-Regular", Consolas, monospace',
   },
   line: {
     display: 'flex',
     alignItems: 'flex-start',
-    minHeight: '22px',
+    gap: '4px',
     whiteSpace: 'pre-wrap',
+    wordBreak: 'break-word',
+    paddingRight: '14px',
   },
   toggle: {
-    width: '24px',
-    marginLeft: '-24px',
     display: 'inline-flex',
+    width: '18px',
     justifyContent: 'center',
     flexShrink: 0,
   },
   toggleButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '18px',
+    height: '18px',
+    padding: 0,
     border: 'none',
+    borderRadius: '6px',
     background: 'transparent',
     color: '#5eead4',
     cursor: 'pointer',
-    padding: 0,
-    display: 'inline-flex',
+  },
+  placeholder: {
+    display: 'flex',
+    minHeight: '500px',
+    flexDirection: 'column',
     alignItems: 'center',
+    justifyContent: 'center',
+    padding: '24px',
+    textAlign: 'center',
+  },
+  placeholderTitle: {
+    color: '#f8fafc',
+    fontSize: '14px',
+    fontWeight: '700',
+  },
+  placeholderText: {
+    marginTop: '6px',
+    color: '#94a3b8',
+    fontSize: '13px',
+    maxWidth: '38ch',
+    lineHeight: 1.6,
   },
 };

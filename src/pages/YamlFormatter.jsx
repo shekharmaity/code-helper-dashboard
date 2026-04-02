@@ -1,68 +1,103 @@
 import { useMemo, useState } from 'react';
 import { Box, Button, Paper, Stack, TextField, Typography } from '@mui/material';
 import YAML from 'yaml';
+import StructuredDataTree from '../components/StructuredDataTree';
 import UtilityPageShell from '../components/UtilityPageShell';
+
+function formatSize(value) {
+  const bytes = new TextEncoder().encode(value).length;
+
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function countNodes(value) {
+  if (!value || typeof value !== 'object') {
+    return 0;
+  }
+
+  const children = Array.isArray(value) ? value : Object.values(value);
+  return 1 + children.reduce((total, child) => total + countNodes(child), 0);
+}
 
 export default function YamlFormatter() {
   const [input, setInput] = useState('');
-  const [output, setOutput] = useState('');
   const [error, setError] = useState('');
+  const [view, setView] = useState('editor');
+  const [treeData, setTreeData] = useState();
+  const [mode, setMode] = useState('yaml');
 
   const stats = useMemo(
     () => [
-      { label: 'Input Length', value: input.length },
-      { label: 'Output Length', value: output.length },
-      { label: 'Status', value: error ? 'Invalid' : output ? 'Formatted' : 'Idle' },
+      { label: 'Workspace Size', value: formatSize(input) },
+      { label: 'Visible Lines', value: input ? input.split('\n').length : 0 },
+      { label: 'Tree Blocks', value: countNodes(treeData) },
+      { label: 'Mode', value: view === 'tree' ? 'Tree View' : 'Raw Input' },
     ],
-    [error, input.length, output.length],
+    [input, treeData, view],
   );
+
+  const parseYamlDocuments = () => {
+    const docs = YAML.parseAllDocuments(input);
+
+    docs.forEach((doc) => {
+      if (doc.errors.length) {
+        throw new Error(doc.errors[0].message);
+      }
+    });
+
+    return docs;
+  };
 
   const handleFormat = () => {
     try {
-      const docs = YAML.parseAllDocuments(input);
+      const docs = parseYamlDocuments();
       const formatted = docs
-        .map((doc) => {
-          if (doc.errors.length) {
-            throw new Error(doc.errors[0].message);
-          }
-
-          return String(doc.toString({ indent: 2 })).trimEnd();
-        })
+        .map((doc) => String(doc.toString({ indent: 2 })).trimEnd())
         .join('\n---\n');
+      const parsed = docs.map((doc) => doc.toJSON());
 
-      setOutput(formatted);
+      setInput(formatted);
+      setTreeData(parsed.length === 1 ? parsed[0] : parsed);
+      setMode('yaml');
+      setView('tree');
       setError('');
     } catch (err) {
       setError(`Invalid YAML: ${err.message}`);
-      setOutput('');
+      setTreeData(undefined);
+      setView('editor');
     }
   };
 
   const handleToJson = () => {
     try {
-      const docs = YAML.parseAllDocuments(input);
-      const json = docs
-        .map((doc) => {
-          if (doc.errors.length) {
-            throw new Error(doc.errors[0].message);
-          }
+      const docs = parseYamlDocuments();
+      const parsed = docs.map((doc) => doc.toJSON());
+      const json = docs.map((doc) => JSON.stringify(doc.toJSON(), null, 2)).join('\n\n');
 
-          return JSON.stringify(doc.toJSON(), null, 2);
-        })
-        .join('\n\n');
-
-      setOutput(json);
+      setInput(json);
+      setTreeData(parsed.length === 1 ? parsed[0] : parsed);
+      setMode('json');
+      setView('tree');
       setError('');
     } catch (err) {
       setError(`Invalid YAML: ${err.message}`);
-      setOutput('');
+      setTreeData(undefined);
+      setView('editor');
     }
   };
 
   return (
     <UtilityPageShell
       title="YAML Formatter"
-      description="Format and validate YAML documents, or convert them into readable JSON for quick inspection."
+      description="Paste YAML, then format it or convert it to JSON and inspect the result as a tree in the same workspace panel."
       stats={stats}
     >
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.25}>
@@ -72,13 +107,18 @@ export default function YamlFormatter() {
         <Button variant="outlined" sx={styles.secondaryButton} onClick={handleToJson}>
           Convert To JSON
         </Button>
+        <Button variant="outlined" sx={styles.secondaryButton} onClick={() => setView('editor')} disabled={!input}>
+          Edit Raw
+        </Button>
         <Button
           variant="text"
           sx={styles.textButton}
           onClick={() => {
             setInput('');
-            setOutput('');
+            setTreeData(undefined);
             setError('');
+            setMode('yaml');
+            setView('editor');
           }}
         >
           Clear
@@ -87,61 +127,107 @@ export default function YamlFormatter() {
 
       {error ? <Paper elevation={0} sx={styles.error}>{error}</Paper> : null}
 
-      <Box sx={styles.grid}>
-        <Paper elevation={0} sx={styles.panel}>
-          <Typography sx={styles.panelTitle}>Input YAML</Typography>
-          <TextField
-            multiline
-            minRows={14}
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            placeholder="Paste YAML here..."
-            fullWidth
-            InputProps={{ sx: styles.input }}
-          />
-        </Paper>
+      <Paper elevation={0} sx={styles.panel}>
+        <Box sx={styles.panelHeader}>
+          <Box>
+            <Typography sx={styles.panelTitle}>YAML Workspace</Typography>
+            <Typography sx={styles.panelSubtitle}>
+              {view === 'tree'
+                ? `Formatted ${mode.toUpperCase()} is rendered as a tree in this same panel.`
+                : 'Paste or edit raw YAML here, then format it when you are ready.'}
+            </Typography>
+          </Box>
+          <Typography sx={styles.panelBadge}>{view === 'tree' ? 'Tree View' : 'Editor'}</Typography>
+        </Box>
 
-        <Paper elevation={0} sx={styles.panel}>
-          <Typography sx={styles.panelTitle}>Output</Typography>
-          <TextField
-            multiline
-            minRows={14}
-            value={output}
-            fullWidth
-            placeholder="Formatted YAML or converted JSON will appear here..."
-            InputProps={{ readOnly: true, sx: styles.input }}
-          />
-        </Paper>
-      </Box>
+        <Box sx={styles.workspace}>
+          {view === 'tree' ? (
+            <StructuredDataTree
+              data={treeData}
+              emptyTitle="Formatted YAML will appear here"
+              emptyHint="Run YAML format or convert to JSON to render a tree view in this panel."
+            />
+          ) : (
+            <TextField
+              multiline
+              minRows={20}
+              value={input}
+              onChange={(event) => {
+                setInput(event.target.value);
+                setTreeData(undefined);
+                setError('');
+              }}
+              placeholder="Paste YAML here..."
+              fullWidth
+              InputProps={{ sx: styles.input }}
+            />
+          )}
+        </Box>
+      </Paper>
     </UtilityPageShell>
   );
 }
 
 const styles = {
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-    gap: 2,
-  },
   panel: {
     p: 2,
     borderRadius: 4,
-    background: 'rgba(255, 255, 255, 0.88)',
-    border: '1px solid rgba(148, 163, 184, 0.18)',
+    background: 'linear-gradient(180deg, #111827 0%, #0f172a 100%)',
+    border: '1px solid rgba(30, 41, 59, 0.85)',
+    boxShadow: '0 24px 52px rgba(15, 23, 42, 0.18)',
+  },
+  panelHeader: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 2,
+    mb: 1.5,
   },
   panelTitle: {
-    mb: 1.25,
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 700,
-    color: '#0f172a',
+    color: '#f8fafc',
+  },
+  panelSubtitle: {
+    mt: 0.5,
+    fontSize: 12,
+    color: '#94a3b8',
+  },
+  panelBadge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    px: 1.25,
+    py: 0.75,
+    borderRadius: 999,
+    background: 'rgba(59, 130, 246, 0.12)',
+    color: '#93c5fd',
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+  },
+  workspace: {
+    minHeight: 500,
+    borderRadius: 3,
+    overflow: 'hidden',
+    border: '1px solid rgba(148, 163, 184, 0.14)',
+    background: 'rgba(15, 23, 42, 0.34)',
   },
   input: {
     alignItems: 'flex-start',
+    minHeight: 500,
+    color: '#e2e8f0',
     fontSize: 13,
-    lineHeight: 1.6,
+    lineHeight: 1.7,
     fontFamily: '"SF Mono", "SFMono-Regular", Consolas, monospace',
-    background: 'rgba(248, 250, 252, 0.9)',
-    borderRadius: 3,
+    background: 'transparent',
+    '& textarea': {
+      minHeight: '500px !important',
+      color: '#e2e8f0',
+    },
+    '& fieldset': {
+      border: 'none',
+    },
   },
   primaryButton: { alignSelf: 'flex-start', borderRadius: 999, textTransform: 'none', fontWeight: 700 },
   secondaryButton: { alignSelf: 'flex-start', borderRadius: 999, textTransform: 'none', fontWeight: 700 },
